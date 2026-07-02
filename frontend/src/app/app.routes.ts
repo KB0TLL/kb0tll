@@ -14,6 +14,14 @@ export const routes: Routes = [
     title: 'About | KB0TLL',
   },
   {
+    path: 'calendar',
+    loadComponent: () =>
+      import('./features/calendar/pages/calendar/calendar').then(
+        (m) => m.Calendar
+      ),
+    title: 'Calendar | KB0TLL',
+  },
+  {
     path: 'leadership',
     loadComponent: () =>
       import('./features/leadership/pages/leadership/leadership').then(
