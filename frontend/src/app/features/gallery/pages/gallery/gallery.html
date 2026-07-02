@@ -1,1 +1,90 @@
-<p>gallery works!</p>
+<section class="bg-white">
+  <div class="mx-auto max-w-[1120px]">
+    <div class="overflow-hidden bg-slate-900">
+      <img
+        src="images/photo_gallery_hero.jpg"
+        alt="JCARC photo gallery"
+        class="h-auto w-full"
+      />
+    </div>
+  </div>
+</section>
+
+<section class="mx-auto max-w-[860px] bg-white px-3 py-3 text-center">
+  <h1 class="text-3xl font-light italic text-slate-950">
+    Photos of the JCARC Gang in Action
+  </h1>
+
+  <p class="mt-1 text-xl font-light text-slate-800">
+    We're adding photos all the time, so check back often.
+  </p>
+</section>
+
+@for (section of gallerySections; track section.title; let sectionIndex = $index) {
+  <section class="mx-auto max-w-[860px] bg-white px-3 pb-12">
+    <div class="border-2 border-slate-800 bg-gradient-to-r from-red-600 via-red-400 to-pink-400 px-4 py-2 text-center">
+      <h2 class="text-4xl font-light italic tracking-[0.22em] text-white sm:text-5xl">
+        {{ section.title }}
+      </h2>
+    </div>
+
+    <div class="mt-4 grid grid-cols-2 gap-3 md:grid-cols-4">
+      @for (photo of section.photos; track photo.src; let photoIndex = $index) {
+        <button
+          type="button"
+          class="group block overflow-hidden bg-white text-left"
+          (click)="openPhoto(sectionIndex, photoIndex)"
+        >
+          <img
+            [src]="photo.src"
+            [alt]="photo.alt"
+            class="aspect-[4/3] w-full object-cover transition group-hover:opacity-85"
+          />
+        </button>
+      }
+    </div>
+  </section>
+}
+
+@if (selectedPhoto(); as photo) {
+  <div
+    class="fixed inset-0 z-[100] flex items-center justify-center bg-black/85 p-4"
+    role="dialog"
+    aria-modal="true"
+    (click)="closePhoto()"
+  >
+    <button
+      type="button"
+      aria-label="Close image viewer"
+      class="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full bg-white text-slate-950 shadow-lg transition hover:bg-slate-200"
+      (click)="closePhoto(); $event.stopPropagation()"
+    >
+      <ng-icon name="lucideX" size="26" strokeWidth="2.5" />
+    </button>
+
+    <button
+      type="button"
+      aria-label="Show previous photo"
+      class="absolute left-3 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-slate-950 shadow-lg transition hover:bg-white sm:left-6"
+      (click)="showPreviousPhoto($event)"
+    >
+      <ng-icon name="lucideChevronLeft" size="32" strokeWidth="2.5" />
+    </button>
+
+    <img
+      [src]="photo.src"
+      [alt]="photo.alt"
+      class="max-h-[88vh] max-w-[94vw] object-contain shadow-2xl"
+      (click)="$event.stopPropagation()"
+    />
+
+    <button
+      type="button"
+      aria-label="Show next photo"
+      class="absolute right-3 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-slate-950 shadow-lg transition hover:bg-white sm:right-6"
+      (click)="showNextPhoto($event)"
+    >
+      <ng-icon name="lucideChevronRight" size="32" strokeWidth="2.5" />
+    </button>
+  </div>
+}
