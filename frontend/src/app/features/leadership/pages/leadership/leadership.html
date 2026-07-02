@@ -1,0 +1,352 @@
+<section class="bg-white">
+  <div class="mx-auto max-w-[1120px]">
+    <div class="overflow-hidden bg-slate-300">
+      <img
+        src="images/leadership_hero.jpg"
+        alt="Jefferson County Amateur Radio Club leadership team"
+        class="h-auto w-full"
+      />
+    </div>
+  </div>
+</section>
+
+<section class="mx-auto max-w-[760px] bg-white px-3 pt-4">
+  <div class="border border-blue-700 bg-white">
+    <div>
+      <img
+        src="images/leadership_our_board.jpg"
+        alt="Jefferson County Amateur Radio Club board members"
+        class="h-auto w-full"
+      />
+    </div>
+
+    <div class="grid grid-cols-2 justify-center gap-1 p-1 sm:grid-cols-3 lg:grid-cols-5">
+      @for (member of executiveMembers; track member.role + member.name) {
+        <article class="border-2 border-slate-800 bg-white text-center">
+          <div class="flex aspect-square items-center justify-center overflow-hidden bg-white">
+            @if (member.image) {
+              <img
+                [src]="member.image"
+                [alt]="member.name"
+                class="h-full w-full object-cover"
+              />
+            } @else {
+              <div class="px-2 text-sm leading-7 text-slate-950">
+                <div>{{ member.role }}</div>
+                <div class="mt-2">{{ member.name }}</div>
+              </div>
+            }
+          </div>
+
+          <div class="px-2 py-1 text-sm leading-5 text-slate-950">
+            {{ member.role }}
+            @if (member.email) {
+              -
+              <a [href]="member.email" class="text-red-600 underline">
+                Email
+              </a>
+            }
+          </div>
+        </article>
+      }
+    </div>
+
+    <div class="grid grid-cols-2 justify-center gap-1 p-1 sm:grid-cols-4 lg:flex lg:flex-wrap lg:justify-center">
+      @for (member of boardMembers; track member.role + member.name) {
+        <article class="border-2 border-slate-800 bg-white text-center lg:w-[calc((100%_-_1rem)/5)]">
+          <div class="flex aspect-square items-center justify-center overflow-hidden bg-white">
+            @if (member.image) {
+              <img
+                [src]="member.image"
+                [alt]="member.name"
+                class="h-full w-full object-cover"
+              />
+            } @else {
+              <div class="px-2 text-sm leading-7 text-slate-950">
+                <div>{{ member.role }}</div>
+                <div class="mt-2">{{ member.name }}</div>
+                <div class="mt-2">(Photo NA)</div>
+              </div>
+            }
+          </div>
+
+          <div class="px-2 py-1 text-sm leading-5 text-slate-950">
+            {{ member.role }}
+          </div>
+        </article>
+      }
+    </div>
+  </div>
+</section>
+
+<section class="mx-auto max-w-[760px] bg-white px-3 pt-4">
+  <div class="border border-blue-700 bg-white">
+    <div>
+      <img
+        src="images/leadership_our_support_team.jpg"
+        alt="Jefferson County Amateur Radio Club support team"
+        class="h-auto w-full"
+      />
+    </div>
+
+    <div class="grid grid-cols-2 justify-center gap-1 p-1 sm:grid-cols-4">
+      @for (member of supportTeamTop; track member.role + member.name) {
+        <article class="border-2 border-slate-800 bg-white text-center">
+          <div class="flex aspect-square items-center justify-center overflow-hidden bg-white">
+            @if (member.image) {
+              <img
+                [src]="member.image"
+                [alt]="member.name"
+                class="h-full w-full object-cover"
+              />
+            } @else {
+              <div class="px-2 text-sm text-slate-950">
+                Photo NA
+              </div>
+            }
+          </div>
+
+          <div class="px-2 py-1 text-sm leading-5 text-slate-950">
+            {{ member.role }}
+          </div>
+        </article>
+      }
+    </div>
+
+    <div class="grid grid-cols-2 justify-center gap-1 p-1 sm:mx-auto sm:max-w-[50%]">
+      @for (member of supportTeamBottom; track member.role + member.name) {
+        <article class="border-2 border-slate-800 bg-white text-center">
+          <div class="flex aspect-square items-center justify-center overflow-hidden bg-white">
+            @if (member.image) {
+              <img
+                [src]="member.image"
+                [alt]="member.name"
+                class="h-full w-full object-cover"
+              />
+            } @else {
+              <div class="px-2 text-sm text-slate-950">
+                Photo NA
+              </div>
+            }
+          </div>
+
+          <div class="px-2 py-1 text-sm leading-5 text-slate-950">
+            {{ member.role }}
+          </div>
+        </article>
+      }
+    </div>
+  </div>
+</section>
+
+<section class="mx-auto max-w-[760px] bg-white px-3 pt-4">
+  <div class="bg-gradient-to-r from-red-500 via-pink-500 to-purple-600 px-4 py-4 text-center">
+    <h2 class="text-6xl font-light italic tracking-wide text-white sm:text-7xl">
+      Reach Out
+    </h2>
+  </div>
+</section>
+
+<section class="mx-auto max-w-[760px] bg-white px-3 pb-12">
+  <div class="grid gap-3 md:grid-cols-2">
+    <article class="border-4 border-red-600 bg-white p-4">
+      <h2 class="text-xl font-black text-slate-950">
+        Contact Us
+      </h2>
+
+      <p class="mt-2 text-sm text-slate-700">
+        Comments? Questions? Let us know!
+      </p>
+
+      <form
+        #contactForm
+        class="mt-6 space-y-5"
+        (submit)="sendContactEmail($event, contactForm)"
+      >
+        <div>
+          <label class="text-sm font-black text-slate-900">
+            Name <span class="text-red-600">*</span>
+          </label>
+
+          <div class="mt-2 grid grid-cols-2 gap-5">
+            <label>
+              <input
+                name="firstName"
+                type="text"
+                required
+                class="h-10 w-full border border-slate-400 px-2 text-sm"
+              />
+              <span class="mt-1 block text-xs text-slate-500">First</span>
+            </label>
+
+            <label>
+              <input
+                name="lastName"
+                type="text"
+                required
+                class="h-10 w-full border border-slate-400 px-2 text-sm"
+              />
+              <span class="mt-1 block text-xs text-slate-500">Last</span>
+            </label>
+          </div>
+        </div>
+
+        <label class="block">
+          <span class="text-sm font-black text-slate-900">Call Sign (If Any)</span>
+          <input
+            name="callSign"
+            type="text"
+            class="mt-2 h-10 w-full max-w-sm border border-slate-400 px-2 text-sm uppercase"
+          />
+        </label>
+
+        <label class="block">
+          <span class="text-sm font-black text-slate-900">
+            Email <span class="text-red-600">*</span>
+          </span>
+          <input
+            name="email"
+            type="email"
+            required
+            class="mt-2 h-10 w-full max-w-sm border border-slate-400 px-2 text-sm"
+          />
+        </label>
+
+        <label class="block">
+          <span class="text-sm font-black text-slate-900">Comment or Message</span>
+          <textarea
+            name="message"
+            rows="7"
+            class="mt-2 w-full border border-slate-400 px-2 py-2 text-sm"
+          ></textarea>
+        </label>
+
+        <button
+          type="submit"
+          class="bg-red-600 px-4 py-2 text-sm font-black text-white hover:bg-red-700"
+        >
+          Submit
+        </button>
+      </form>
+    </article>
+
+    <article class="border-4 border-red-600 bg-white p-4">
+      <h2 class="text-xl font-black text-slate-950">
+        Join Our Club Here!
+      </h2>
+
+      <p class="mt-2 text-sm leading-6 text-slate-700">
+        You will be contacted regarding the approval of your submitted application
+        following board review. Dues are $25 annually.
+      </p>
+
+      <form
+        #membershipForm
+        class="mt-6 space-y-5"
+        (submit)="sendMembershipEmail($event, membershipForm)"
+      >
+        <div>
+          <label class="text-sm font-black text-slate-900">
+            Your Name <span class="text-red-600">*</span>
+          </label>
+
+          <div class="mt-2 grid grid-cols-2 gap-5">
+            <label>
+              <input
+                name="firstName"
+                type="text"
+                required
+                class="h-8 w-full border border-slate-400 px-2 text-sm"
+              />
+              <span class="mt-1 block text-xs text-slate-500">First</span>
+            </label>
+
+            <label>
+              <input
+                name="lastName"
+                type="text"
+                required
+                class="h-8 w-full border border-slate-400 px-2 text-sm"
+              />
+              <span class="mt-1 block text-xs text-slate-500">Last</span>
+            </label>
+          </div>
+        </div>
+
+        <label class="block">
+          <span class="text-sm font-black text-slate-900">
+            Call Sign (If Any) - Technician/General/Extra
+          </span>
+          <input
+            name="callSignLicenseClass"
+            type="text"
+            class="mt-2 h-8 w-full max-w-sm border border-slate-400 px-2 text-sm uppercase"
+          />
+        </label>
+
+        <label class="block">
+          <span class="text-sm font-black text-slate-900">
+            Street Address/City/State/Zip
+          </span>
+          <input
+            name="address"
+            type="text"
+            class="mt-2 h-8 w-full max-w-sm border border-slate-400 px-2 text-sm"
+          />
+        </label>
+
+        <label class="block">
+          <span class="text-sm font-black text-slate-900">
+            Phone (Home, Work, Cell)
+          </span>
+          <input
+            name="phone"
+            type="text"
+            class="mt-2 h-8 w-full max-w-sm border border-slate-400 px-2 text-sm"
+          />
+        </label>
+
+        <label class="block">
+          <span class="text-sm font-black text-slate-900">
+            Email <span class="text-red-600">*</span>
+          </span>
+          <input
+            name="email"
+            type="email"
+            required
+            class="mt-2 h-8 w-full max-w-sm border border-slate-400 px-2 text-sm"
+          />
+        </label>
+
+        <label class="block">
+          <span class="text-sm font-black text-slate-900">
+            Licensed Family Members - Name/Call/License Class
+          </span>
+          <input
+            name="licensedFamilyMembers"
+            type="text"
+            class="mt-2 h-8 w-full max-w-sm border border-slate-400 px-2 text-sm"
+          />
+        </label>
+
+        <label class="block">
+          <span class="text-sm font-black text-slate-900">
+            Emergency Contact - Name/Phone
+          </span>
+          <input
+            name="emergencyContact"
+            type="text"
+            class="mt-2 h-8 w-full max-w-sm border border-slate-400 px-2 text-sm"
+          />
+        </label>
+
+        <button
+          type="submit"
+          class="bg-red-600 px-4 py-2 text-sm font-black text-white hover:bg-red-700"
+        >
+          Submit
+        </button>
+      </form>
+    </article>
+  </div>
+</section>

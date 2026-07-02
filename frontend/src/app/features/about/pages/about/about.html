@@ -1,0 +1,345 @@
+<section class="bg-white">
+  <div class="mx-auto max-w-[1120px]">
+    <div class="relative overflow-hidden bg-slate-900">
+      <img
+        src="images/about_us.jpg"
+        alt="Jefferson County Amateur Radio Club members at club meetings"
+        class="h-auto w-full"
+      />
+    </div>
+  </div>
+</section>
+
+<section class="mx-auto max-w-4xl px-4 py-2">
+  <div class="grid gap-1 md:grid-cols-2">
+    <article class="border-4 border-red-600 bg-white">
+      <div class="bg-red-600 px-3 py-1 text-center">
+        <h2 class="text-4xl font-light leading-tight text-white">
+          Our Club Today
+        </h2>
+      </div>
+
+      <div class="border-b-4 border-red-600">
+        <img
+          src="images/our_club_today.jpg"
+          alt="St. Clement Health Care Center sign and KB0TLL repeater tower view"
+          class="h-auto w-full"
+        />
+      </div>
+
+      <div class="space-y-3 px-2 py-3 text-[13px] leading-6 text-slate-800">
+        <p>
+          The Jefferson County Amateur Radio Club is a friendly, growing, and vibrant
+          organization that currently comprises over fifty members.
+        </p>
+
+        <p>
+          The club members meet on the first Saturday of each month in the conference
+          room of St. Clement Health Care Center, located at 300 Liguori Rd near
+          Barnhart in Liguori, MO.
+        </p>
+
+        <p>
+          Our website home page displays detailed information about events, repeaters,
+          nets, and club news.
+        </p>
+
+        <p class="font-semibold">
+          Our club’s purpose includes:
+        </p>
+
+        <ul class="ml-5 list-disc space-y-1">
+          <li>Providing important connections for fellow hams.</li>
+          <li>Providing important services to the Jefferson County area.</li>
+          <li>
+            Partnering with the Jefferson County EOC and ARES with an active
+            Emergency Preparedness Plan.
+          </li>
+        </ul>
+
+        <p>
+          In 2022, the club began meeting at the St. Clement Health Care Center.
+          In 2023, a complete radio station was added which is operational on all
+          ham bands. The radio station is available to all members by appointment.
+        </p>
+
+        <p>
+          Anyone, whether a member or not, is welcome to join us for our club
+          meetings. Please feel free to fill out and submit a message through the
+          contact form found at the bottom of any of our web pages.
+        </p>
+      </div>
+    </article>
+
+    <article class="border-4 border-red-600 bg-white">
+      <div class="bg-slate-700 px-3 py-1 text-center">
+        <h2 class="text-4xl font-light leading-tight text-white">
+          Our Club History
+        </h2>
+      </div>
+
+      <div class="border-b-4 border-red-600">
+        <img
+          src="images/our_club_history.jpg"
+          alt="Historic Jefferson County Amateur Radio Club group photo"
+          class="h-auto w-full"
+        />
+      </div>
+
+      <div class="space-y-3 px-2 py-3 text-[13px] leading-6 text-slate-800">
+        <p>
+          Our club began in 1936 resulting from the efforts of four Jefferson County
+          men and their interest in amateur radio: charter members Charles Herbert,
+          Emanuel Roth, Walter Hample, and Tyndle Polk.
+        </p>
+
+        <p>
+          The new organization held regular monthly meetings on the first Sunday of
+          each month at the host member’s home.
+        </p>
+
+        <p>
+          In 1938, it was decided to change the name to the Ozark Amateur Radio Club
+          representing Jefferson, Ste. Genevieve, Perry, and St. Francois counties.
+        </p>
+
+        <p>
+          This new name remained until the start of World War II when the government
+          ordered all amateurs off the air for security purposes.
+        </p>
+
+        <p>
+          The club reorganized in the 1970s and that is when it took the name of the
+          Jefferson County Amateur Radio Club. Ste. Genevieve and St. Francois
+          counties have their own clubs.
+        </p>
+
+        <p>
+          In 1996, the JCARC was issued the club call sign KBØTLL and implemented the
+          147.075 repeater.
+        </p>
+
+        <p>
+          For many years, the Windsor Branch of the Jefferson County Library hosted
+          the club’s monthly meetings. During the COVID pandemic, club meetings
+          continued on Zoom into early 2022.
+        </p>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section class="mx-auto max-w-4xl px-4 pt-1">
+  <div class="bg-gradient-to-r from-red-500 via-pink-500 to-purple-600 px-4 py-4 text-center">
+    <h2 class="text-6xl font-light italic tracking-wide text-white sm:text-7xl">
+      Reach Out
+    </h2>
+  </div>
+</section>
+
+<section class="mx-auto max-w-4xl px-4 pb-10">
+  <div class="grid gap-3 md:grid-cols-2">
+    <article class="border-4 border-red-600 bg-white p-3">
+      <h2 class="text-xl font-black text-slate-950">
+        Contact Us
+      </h2>
+
+      <p class="mt-2 text-sm text-slate-700">
+        Comments? Questions? Let us know!
+      </p>
+
+      <form
+        #contactForm
+        class="mt-5 space-y-4"
+        (submit)="sendContactEmail($event, contactForm)"
+      >
+        <div>
+          <label class="text-sm font-black text-slate-900">
+            Name <span class="text-red-600">*</span>
+          </label>
+
+          <div class="mt-2 grid grid-cols-2 gap-4">
+            <label>
+              <input
+                name="firstName"
+                type="text"
+                required
+                class="h-9 w-full border border-slate-400 px-2 text-sm"
+              />
+              <span class="mt-1 block text-xs text-slate-500">First</span>
+            </label>
+
+            <label>
+              <input
+                name="lastName"
+                type="text"
+                required
+                class="h-9 w-full border border-slate-400 px-2 text-sm"
+              />
+              <span class="mt-1 block text-xs text-slate-500">Last</span>
+            </label>
+          </div>
+        </div>
+
+        <label class="block">
+          <span class="text-sm font-black text-slate-900">Call Sign If Any</span>
+          <input
+            name="callSign"
+            type="text"
+            class="mt-2 h-9 w-full border border-slate-400 px-2 text-sm uppercase"
+          />
+        </label>
+
+        <label class="block">
+          <span class="text-sm font-black text-slate-900">
+            Email <span class="text-red-600">*</span>
+          </span>
+          <input
+            name="email"
+            type="email"
+            required
+            class="mt-2 h-9 w-full border border-slate-400 px-2 text-sm"
+          />
+        </label>
+
+        <label class="block">
+          <span class="text-sm font-black text-slate-900">
+            Comment or Message
+          </span>
+          <textarea
+            name="message"
+            rows="6"
+            class="mt-2 w-full border border-slate-400 px-2 py-2 text-sm"
+          ></textarea>
+        </label>
+
+        <button
+          type="submit"
+          class="bg-red-600 px-4 py-2 text-sm font-black text-white hover:bg-red-700"
+        >
+          Submit
+        </button>
+      </form>
+    </article>
+
+    <article class="border-4 border-red-600 bg-white p-3">
+      <h2 class="text-xl font-black text-slate-950">
+        Join Our Club Here!
+      </h2>
+
+      <p class="mt-2 text-sm leading-6 text-slate-700">
+        You will be contacted regarding the approval of your submitted application
+        following board review. Dues are $25 annually. You may pay in person at our
+        monthly meeting or send a check payable to Jefferson County Amateur Radio Club.
+      </p>
+
+      <form
+        #membershipForm
+        class="mt-5 space-y-4"
+        (submit)="sendMembershipEmail($event, membershipForm)"
+      >
+        <div>
+          <label class="text-sm font-black text-slate-900">
+            Your Name <span class="text-red-600">*</span>
+          </label>
+
+          <div class="mt-2 grid grid-cols-2 gap-4">
+            <label>
+              <input
+                name="firstName"
+                type="text"
+                required
+                class="h-8 w-full border border-slate-400 px-2 text-sm"
+              />
+              <span class="mt-1 block text-xs text-slate-500">First</span>
+            </label>
+
+            <label>
+              <input
+                name="lastName"
+                type="text"
+                required
+                class="h-8 w-full border border-slate-400 px-2 text-sm"
+              />
+              <span class="mt-1 block text-xs text-slate-500">Last</span>
+            </label>
+          </div>
+        </div>
+
+        <label class="block">
+          <span class="text-sm font-black text-slate-900">
+            Call Sign If Any - Technician/General/Extra
+          </span>
+          <input
+            name="callSignLicenseClass"
+            type="text"
+            class="mt-2 h-8 w-full border border-slate-400 px-2 text-sm uppercase"
+          />
+        </label>
+
+        <label class="block">
+          <span class="text-sm font-black text-slate-900">
+            Street Address/City/State/Zip
+          </span>
+          <input
+            name="address"
+            type="text"
+            class="mt-2 h-8 w-full border border-slate-400 px-2 text-sm"
+          />
+        </label>
+
+        <label class="block">
+          <span class="text-sm font-black text-slate-900">
+            Phone (Home, Work, Cell)
+          </span>
+          <input
+            name="phone"
+            type="text"
+            class="mt-2 h-8 w-full border border-slate-400 px-2 text-sm"
+          />
+        </label>
+
+        <label class="block">
+          <span class="text-sm font-black text-slate-900">
+            Email <span class="text-red-600">*</span>
+          </span>
+          <input
+            name="email"
+            type="email"
+            required
+            class="mt-2 h-8 w-full border border-slate-400 px-2 text-sm"
+          />
+        </label>
+
+        <label class="block">
+          <span class="text-sm font-black text-slate-900">
+            Licensed Family Members - Name/Call/License Class
+          </span>
+          <input
+            name="licensedFamilyMembers"
+            type="text"
+            class="mt-2 h-8 w-full border border-slate-400 px-2 text-sm"
+          />
+        </label>
+
+        <label class="block">
+          <span class="text-sm font-black text-slate-900">
+            Emergency Contact - Name/Phone
+          </span>
+          <input
+            name="emergencyContact"
+            type="text"
+            class="mt-2 h-8 w-full border border-slate-400 px-2 text-sm"
+          />
+        </label>
+
+        <button
+          type="submit"
+          class="bg-red-600 px-4 py-2 text-sm font-black text-white hover:bg-red-700"
+        >
+          Submit
+        </button>
+      </form>
+    </article>
+  </div>
+</section>

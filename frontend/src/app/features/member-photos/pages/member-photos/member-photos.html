@@ -1,0 +1,247 @@
+<section class="bg-white">
+  <div class="mx-auto max-w-[1120px]">
+    <div class="overflow-hidden bg-slate-300">
+      <img
+        src="images/members/member_photos_hero.png"
+        alt="JCARC member photos board"
+        class="h-auto w-full"
+      />
+    </div>
+  </div>
+</section>
+
+<section class="mx-auto max-w-[860px] bg-white px-3 py-2">
+  <h1 class="text-center text-2xl font-light italic text-slate-950 sm:text-3xl">
+    Our Photos Are Displayed in Order by Call Sign
+  </h1>
+
+  <div class="mt-2 grid grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-3 md:grid-cols-5">
+    @for (member of memberPhotos; track member.image) {
+      <article class="text-center">
+        <div class="border border-slate-800 bg-white">
+          <img
+            [src]="member.image"
+            [alt]="member.caption"
+            class="h-auto w-full"
+          />
+        </div>
+
+        <p class="mt-1 text-xs italic leading-5 text-slate-950">
+          {{ member.caption }}
+        </p>
+      </article>
+    }
+  </div>
+</section>
+
+<section class="mx-auto max-w-[860px] bg-white px-3 pt-4">
+  <div class="bg-gradient-to-r from-red-500 via-pink-500 to-purple-600 px-4 py-4 text-center">
+    <h2 class="text-6xl font-light italic tracking-wide text-white sm:text-7xl">
+      Reach Out
+    </h2>
+  </div>
+</section>
+
+<section class="mx-auto max-w-[860px] bg-white px-3 pb-12">
+  <div class="grid gap-3 md:grid-cols-2">
+    <article class="border-4 border-red-600 bg-white p-4">
+      <h2 class="text-xl font-black text-slate-950">
+        Contact Us
+      </h2>
+
+      <p class="mt-2 text-sm text-slate-700">
+        Comments? Questions? Let us know!
+      </p>
+
+      <form
+        #contactForm
+        class="mt-6 space-y-5"
+        (submit)="sendContactEmail($event, contactForm)"
+      >
+        <div>
+          <label class="text-sm font-black text-slate-900">
+            Name <span class="text-red-600">*</span>
+          </label>
+
+          <div class="mt-2 grid grid-cols-2 gap-5">
+            <label>
+              <input
+                name="firstName"
+                type="text"
+                required
+                class="h-10 w-full border border-slate-400 px-2 text-sm"
+              />
+              <span class="mt-1 block text-xs text-slate-500">First</span>
+            </label>
+
+            <label>
+              <input
+                name="lastName"
+                type="text"
+                required
+                class="h-10 w-full border border-slate-400 px-2 text-sm"
+              />
+              <span class="mt-1 block text-xs text-slate-500">Last</span>
+            </label>
+          </div>
+        </div>
+
+        <label class="block">
+          <span class="text-sm font-black text-slate-900">Call Sign (If Any)</span>
+          <input
+            name="callSign"
+            type="text"
+            class="mt-2 h-10 w-full max-w-sm border border-slate-400 px-2 text-sm uppercase"
+          />
+        </label>
+
+        <label class="block">
+          <span class="text-sm font-black text-slate-900">
+            Email <span class="text-red-600">*</span>
+          </span>
+          <input
+            name="email"
+            type="email"
+            required
+            class="mt-2 h-10 w-full max-w-sm border border-slate-400 px-2 text-sm"
+          />
+        </label>
+
+        <label class="block">
+          <span class="text-sm font-black text-slate-900">Comment or Message</span>
+          <textarea
+            name="message"
+            rows="7"
+            class="mt-2 w-full border border-slate-400 px-2 py-2 text-sm"
+          ></textarea>
+        </label>
+
+        <button
+          type="submit"
+          class="bg-red-600 px-4 py-2 text-sm font-black text-white hover:bg-red-700"
+        >
+          Submit
+        </button>
+      </form>
+    </article>
+
+    <article class="border-4 border-red-600 bg-white p-4">
+      <h2 class="text-xl font-black text-slate-950">
+        Join Our Club Here!
+      </h2>
+
+      <p class="mt-2 text-sm leading-6 text-slate-700">
+        You will be contacted regarding the approval of your submitted application
+        following board review. Dues are $25 annually.
+      </p>
+
+      <form
+        #membershipForm
+        class="mt-6 space-y-5"
+        (submit)="sendMembershipEmail($event, membershipForm)"
+      >
+        <div>
+          <label class="text-sm font-black text-slate-900">
+            Your Name <span class="text-red-600">*</span>
+          </label>
+
+          <div class="mt-2 grid grid-cols-2 gap-5">
+            <label>
+              <input
+                name="firstName"
+                type="text"
+                required
+                class="h-8 w-full border border-slate-400 px-2 text-sm"
+              />
+              <span class="mt-1 block text-xs text-slate-500">First</span>
+            </label>
+
+            <label>
+              <input
+                name="lastName"
+                type="text"
+                required
+                class="h-8 w-full border border-slate-400 px-2 text-sm"
+              />
+              <span class="mt-1 block text-xs text-slate-500">Last</span>
+            </label>
+          </div>
+        </div>
+
+        <label class="block">
+          <span class="text-sm font-black text-slate-900">
+            Call Sign (If Any) - Technician/General/Extra
+          </span>
+          <input
+            name="callSignLicenseClass"
+            type="text"
+            class="mt-2 h-8 w-full max-w-sm border border-slate-400 px-2 text-sm uppercase"
+          />
+        </label>
+
+        <label class="block">
+          <span class="text-sm font-black text-slate-900">
+            Street Address/City/State/Zip
+          </span>
+          <input
+            name="address"
+            type="text"
+            class="mt-2 h-8 w-full max-w-sm border border-slate-400 px-2 text-sm"
+          />
+        </label>
+
+        <label class="block">
+          <span class="text-sm font-black text-slate-900">
+            Phone (Home, Work, Cell)
+          </span>
+          <input
+            name="phone"
+            type="text"
+            class="mt-2 h-8 w-full max-w-sm border border-slate-400 px-2 text-sm"
+          />
+        </label>
+
+        <label class="block">
+          <span class="text-sm font-black text-slate-900">
+            Email <span class="text-red-600">*</span>
+          </span>
+          <input
+            name="email"
+            type="email"
+            required
+            class="mt-2 h-8 w-full max-w-sm border border-slate-400 px-2 text-sm"
+          />
+        </label>
+
+        <label class="block">
+          <span class="text-sm font-black text-slate-900">
+            Licensed Family Members - Name/Call/License Class
+          </span>
+          <input
+            name="licensedFamilyMembers"
+            type="text"
+            class="mt-2 h-8 w-full max-w-sm border border-slate-400 px-2 text-sm"
+          />
+        </label>
+
+        <label class="block">
+          <span class="text-sm font-black text-slate-900">
+            Emergency Contact - Name/Phone
+          </span>
+          <input
+            name="emergencyContact"
+            type="text"
+            class="mt-2 h-8 w-full max-w-sm border border-slate-400 px-2 text-sm"
+          />
+        </label>
+
+        <button
+          type="submit"
+          class="bg-red-600 px-4 py-2 text-sm font-black text-white hover:bg-red-700"
+        >
+          Submit
+        </button>
+      </form>
+    </article>
+  </div>
+</section>

@@ -1,0 +1,104 @@
+<header class="sticky top-0 z-50 border-b border-slate-200 bg-white/95 shadow-sm backdrop-blur">
+  <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
+    <a routerLink="/" class="flex items-center gap-3" (click)="closeMenu()">
+      <img
+        src="images/kb0tll.png"
+        alt="KB0TLL logo"
+        class="h-25 w-25 object-contain"
+      />
+
+      <div class="leading-tight">
+        <div class="text-xs font-black uppercase tracking-[0.22em] text-slate-500">
+          KBØTLL
+        </div>
+        <div class="text-base font-black text-slate-950 sm:text-lg">
+          Jefferson County Amateur Radio Club
+        </div>
+      </div>
+    </a>
+
+    <div class="hidden items-center gap-6 lg:flex">
+      <nav class="flex items-center gap-6 text-sm font-bold text-slate-700">
+        @for (item of navItems; track item.path) {
+          <a
+            [routerLink]="item.path"
+            routerLinkActive="text-red-700"
+            class="transition hover:text-red-700"
+          >
+            {{ item.label }}
+          </a>
+        }
+      </nav>
+
+      <div class="flex items-center gap-2">
+        <a
+          href="https://www.facebook.com/groups/1908612046068148"
+          target="_blank"
+          rel="noreferrer"
+          aria-label="Visit KB0TLL on Facebook"
+          class="flex h-10 w-10 items-center justify-center rounded-full bg-[#1877f2] text-white transition hover:bg-[#145dbd]"
+        >
+          <ng-icon name="lucideFacebook" size="26" />
+        </a>
+
+        <a
+          href="https://www.youtube.com/channel/UCclpvg7HPKjJFU1GiDfJnPg"
+          target="_blank"
+          rel="noreferrer"
+          aria-label="Visit KB0TLL on YouTube"
+          class="flex h-10 w-10 items-center justify-center rounded-full bg-[#ff0000] text-white transition hover:bg-[#cc0000]"
+        >
+          <ng-icon name="lucideYoutube" size="26" />
+        </a>
+      </div>
+    </div>
+
+    <button
+      type="button"
+      aria-label="Open navigation menu"
+      class="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-300 text-slate-700 lg:hidden"
+      (click)="toggleMenu()"
+    >
+      <ng-icon name="lucideMenu" size="24" strokeWidth="2.5" />
+    </button>
+  </div>
+
+  @if (menuOpen()) {
+    <nav class="border-t border-slate-200 bg-white px-4 py-3 lg:hidden">
+      <div class="mx-auto flex max-w-7xl flex-col gap-1">
+        @for (item of navItems; track item.path) {
+          <a
+            [routerLink]="item.path"
+            routerLinkActive="bg-red-50 text-red-700"
+            class="rounded-xl px-3 py-3 text-sm font-bold text-slate-700"
+            (click)="closeMenu()"
+          >
+            {{ item.label }}
+          </a>
+        }
+
+        <div class="mt-2 flex items-center gap-2 border-t border-slate-200 pt-3">
+          <a
+            href="https://www.facebook.com/groups/1908612046068148"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Visit KB0TLL on Facebook"
+            class="flex h-10 w-10 items-center justify-center rounded-full bg-[#1877f2] text-white"
+          >
+            <ng-icon name="lucideFacebook" size="26" />
+          </a>
+
+          <a
+            href="https://www.youtube.com/channel/UCclpvg7HPKjJFU1GiDfJnPg"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Visit KB0TLL on YouTube"
+            class="flex h-10 w-10 items-center justify-center rounded-full bg-[#ff0000] text-white"
+          >
+            <ng-icon name="lucideYoutube" size="26" />
+          </a>
+        </div>
+      </div>
+    </nav>
+  }
+</header>
