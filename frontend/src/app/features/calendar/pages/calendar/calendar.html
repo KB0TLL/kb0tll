@@ -377,11 +377,11 @@
   <section class="calendar-pdf-summary">
     <div class="calendar-pdf-glance">
       <p class="calendar-pdf-kicker">At A Glance</p>
-      <h2>{{ currentMonthEvents().length }} scheduled items</h2>
+      <h2>{{ atAGlanceEvents().length }} featured items</h2>
 
-      @if (currentMonthEvents().length > 0) {
+      @if (atAGlanceEvents().length > 0) {
         <ul>
-          @for (event of currentMonthEvents(); track event.id) {
+          @for (event of atAGlanceEvents(); track event.id) {
             <li>{{ formatAtAGlanceEvent(event) }}</li>
           }
         </ul>

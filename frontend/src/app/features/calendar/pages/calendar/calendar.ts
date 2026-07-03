@@ -146,6 +146,10 @@ export class Calendar implements OnInit {
     }));
   });
 
+  protected readonly atAGlanceEvents = computed(() =>
+    this.currentMonthEvents().filter((event) => event.type !== 'net')
+  );
+
   protected readonly printableCalendarRows = computed(() => {
     const days = this.calendarDays();
     const rows: CalendarDay[][] = [];
