@@ -479,10 +479,19 @@ export class Calendar implements OnInit {
 
     const cleanup = () => {
       document.body.classList.remove('calendar-printing');
+      window.removeEventListener('afterprint', cleanup);
+      window.removeEventListener('focus', cleanup);
     };
 
-    window.addEventListener('afterprint', cleanup, { once: true });
-    window.print();
+    window.addEventListener('afterprint', cleanup);
+    window.addEventListener('focus', cleanup, { once: true });
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        window.print();
+        window.setTimeout(cleanup, 30000);
+      });
+    });
   }
 
   private getRandomPrintableGalleryPhoto(): string {
