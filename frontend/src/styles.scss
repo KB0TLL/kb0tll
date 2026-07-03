@@ -11,3 +11,308 @@ body {
   color: #0f172a;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
+
+@media print {
+  body.calendar-printing app-site-header,
+  body.calendar-printing app-site-footer {
+    display: none !important;
+  }
+
+  body.calendar-printing {
+    background: white;
+  }
+
+  body.calendar-printing .calendar-screen {
+    display: none !important;
+  }
+
+  body.calendar-printing .calendar-pdf {
+    box-sizing: border-box;
+    color: #243042;
+    display: block;
+    font-family: Inter, Arial, Helvetica, sans-serif;
+    min-height: 10.5in;
+    padding: 0.02in 0.12in 0;
+    width: 100%;
+  }
+
+  .calendar-pdf-header {
+    margin: 0 auto;
+    max-width: 7.6in;
+    overflow: hidden;
+  }
+
+  .calendar-pdf-month {
+    align-items: center;
+    background:
+      linear-gradient(115deg, rgb(33 45 9 / 92%) 0%, rgb(75 101 8 / 90%) 55%, rgb(15 23 42 / 92%) 100%),
+      url('/images/photo_gallery/003_gallery_photo_gallery_banner_1_qlnvb8xkz7tcben72rr6tzes7dya10q53v5iel0mvk.jpg');
+    background-position: center;
+    background-size: cover;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    min-height: 1.55in;
+    padding: 0.16in 0.24in 0.26in;
+    position: relative;
+  }
+
+  .calendar-pdf-month::after {
+    background: linear-gradient(180deg, transparent 0%, rgb(0 0 0 / 18%) 100%);
+    content: '';
+    inset: 0;
+    position: absolute;
+  }
+
+  .calendar-pdf-brand {
+    align-items: center;
+    display: flex;
+    gap: 0.1in;
+    position: relative;
+    text-transform: uppercase;
+    z-index: 1;
+  }
+
+  .calendar-pdf-brand img {
+    background: white;
+    border-radius: 999px;
+    box-shadow: 0 4px 14px rgb(0 0 0 / 28%);
+    height: 0.68in;
+    object-fit: contain;
+    padding: 0.05in;
+    width: 0.68in;
+  }
+
+  .calendar-pdf-brand p {
+    font-size: 8pt;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    margin: 0 0 0.03in;
+    max-width: 2.4in;
+  }
+
+  .calendar-pdf-brand strong {
+    display: block;
+    font-size: 21pt;
+    letter-spacing: 0.04em;
+    line-height: 1;
+  }
+
+  .calendar-pdf-title {
+    max-width: 3.25in;
+    position: relative;
+    text-align: right;
+    z-index: 1;
+  }
+
+  .calendar-pdf-month h1 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 54pt;
+    font-weight: 900;
+    line-height: 0.85;
+    margin: 0.03in 0 0.06in;
+  }
+
+  .calendar-pdf-month p,
+  .calendar-pdf-month span {
+    display: block;
+    font-size: 8pt;
+    font-weight: 900;
+    letter-spacing: 0.14em;
+    line-height: 1;
+    margin: 0;
+    text-transform: uppercase;
+  }
+
+  .calendar-pdf-summary {
+    align-items: stretch;
+    display: flex;
+    gap: 0.14in;
+    justify-content: space-between;
+    margin: -0.16in auto 0.14in;
+    max-width: 7.22in;
+    min-height: 1.55in;
+    position: relative;
+    z-index: 2;
+  }
+
+  .calendar-pdf-glance {
+    background: white;
+    border-top: 0.04in solid #7b9b22;
+    box-shadow: 0 8px 20px rgb(15 23 42 / 16%);
+    flex: 1;
+    padding: 0.13in 0.16in 0.12in;
+  }
+
+  .calendar-pdf-kicker {
+    color: #6f8f12;
+    font-size: 7pt;
+    font-weight: 900;
+    letter-spacing: 0.16em;
+    line-height: 1;
+    margin: 0 0 0.04in;
+    text-transform: uppercase;
+  }
+
+  .calendar-pdf-summary h2 {
+    color: #1f2937;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 18.5pt;
+    font-weight: 900;
+    line-height: 1;
+    margin: 0 0 0.08in;
+  }
+
+  .calendar-pdf-summary ul {
+    columns: 2;
+    column-gap: 0.14in;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .calendar-pdf-summary li,
+  .calendar-pdf-summary p {
+    break-inside: avoid;
+    color: #111827;
+    font-size: 7.5pt;
+    font-weight: 650;
+    line-height: 1.25;
+    margin: 0 0 0.035in;
+  }
+
+  .calendar-pdf-photo {
+    background: white;
+    box-shadow: 0 8px 20px rgb(15 23 42 / 18%);
+    margin: 0;
+    padding: 0.06in;
+    transform: rotate(1.5deg);
+    width: 2.05in;
+  }
+
+  .calendar-pdf-photo img {
+    display: block;
+    height: 1.18in;
+    object-fit: cover;
+    width: 100%;
+  }
+
+  .calendar-pdf-photo figcaption {
+    color: #4b5563;
+    font-size: 6.5pt;
+    font-weight: 800;
+    line-height: 1.15;
+    margin-top: 0.05in;
+    text-align: center;
+  }
+
+  .calendar-pdf-grid {
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 0 auto;
+    max-width: 7.6in;
+    table-layout: fixed;
+    width: 7.6in;
+  }
+
+  .calendar-pdf-grid th {
+    background: #26310d;
+    border: 0;
+    border-right: 1px solid rgb(255 255 255 / 18%);
+    color: white;
+    font-size: 6.8pt;
+    font-weight: 900;
+    height: 0.18in;
+    letter-spacing: 0.05em;
+    padding: 0.025in;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  .calendar-pdf-grid td {
+    background: rgb(255 255 255 / 92%);
+    border: 0;
+    border-bottom: 1px solid #d8dee8;
+    border-right: 1px solid #d8dee8;
+    height: 0.74in;
+    padding: 0.03in;
+    text-align: center;
+    vertical-align: top;
+  }
+
+  .calendar-pdf-empty {
+    background: #f6f7f3;
+  }
+
+  .calendar-pdf-grid tbody tr:nth-child(even) td:not(.calendar-pdf-empty) {
+    background: #fbfcf8;
+  }
+
+  .calendar-pdf-day {
+    color: #6f8f12;
+    font-size: 7pt;
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 0.02in;
+  }
+
+  .calendar-pdf-event {
+    border-radius: 0.025in;
+    color: #243042;
+    font-size: 6.15pt;
+    font-weight: 750;
+    line-height: 1.15;
+    margin: 0 auto 0.02in;
+    max-width: 0.95in;
+    overflow-wrap: anywhere;
+    padding: 0.018in 0.02in;
+  }
+
+  .calendar-pdf-event-meeting {
+    background: #fde68a;
+    color: #111827;
+    font-weight: 900;
+  }
+
+  .calendar-pdf-event-net {
+    background: #dbeafe;
+    color: #1e3a8a;
+  }
+
+  .calendar-pdf-event-special {
+    background: #dcfce7;
+    color: #14532d;
+    font-weight: 900;
+  }
+
+  .calendar-pdf-footer {
+    border-top: 1px solid #d8dee8;
+    color: #1f2937;
+    margin: 0.08in auto 0;
+    max-width: 7.6in;
+    padding-top: 0.05in;
+    text-align: center;
+  }
+
+  .calendar-pdf-footer p {
+    font-size: 12pt;
+    line-height: 1;
+    margin: 0 0 0.03in;
+  }
+
+  .calendar-pdf-footer span {
+    color: #1d4ed8;
+    font-weight: 700;
+    text-decoration: underline;
+  }
+
+  .calendar-pdf-footer small {
+    display: block;
+    font-size: 5pt;
+  }
+}
+
+@page {
+  margin: 0.25in;
+  size: letter portrait;
+}

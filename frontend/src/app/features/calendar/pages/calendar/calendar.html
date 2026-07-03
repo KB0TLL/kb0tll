@@ -1,3 +1,4 @@
+<div class="calendar-screen">
 <section class="bg-white">
   <div class="mx-auto max-w-[1120px] px-4 py-6">
     <div class="flex flex-col gap-3 rounded-xl border-4 border-red-600 bg-white p-4 shadow-lg sm:flex-row sm:items-center sm:justify-between">
@@ -26,6 +27,14 @@
           class="rounded border border-slate-300 bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-slate-200"
         >
           Next
+        </button>
+
+        <button
+          type="button"
+          (click)="exportPdf()"
+          class="rounded border border-green-700 bg-green-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-green-800"
+        >
+          Export PDF
         </button>
       </div>
     </div>
@@ -343,3 +352,85 @@
     </div>
   </div>
 }
+</div>
+
+<section class="calendar-pdf" aria-label="Printable calendar">
+  <header class="calendar-pdf-header">
+    <div class="calendar-pdf-month">
+      <div class="calendar-pdf-brand">
+        <img src="images/kb0tll.png" alt="KB0TLL logo" />
+
+        <div>
+          <p>Jefferson County Amateur Radio Club</p>
+          <strong>KB0TLL</strong>
+        </div>
+      </div>
+
+      <div class="calendar-pdf-title">
+        <p>{{ displayDate().year }} Club Calendar</p>
+        <h1>{{ monthNames[displayDate().month] }}</h1>
+        <span>Meetings, nets, training, and community radio events</span>
+      </div>
+    </div>
+  </header>
+
+  <section class="calendar-pdf-summary">
+    <div class="calendar-pdf-glance">
+      <p class="calendar-pdf-kicker">At A Glance</p>
+      <h2>{{ currentMonthEvents().length }} scheduled items</h2>
+
+      @if (currentMonthEvents().length > 0) {
+        <ul>
+          @for (event of currentMonthEvents(); track event.id) {
+            <li>{{ formatAtAGlanceEvent(event) }}</li>
+          }
+        </ul>
+      } @else {
+        <p>No events added for this month.</p>
+      }
+    </div>
+
+    <figure class="calendar-pdf-photo">
+      <img
+        [src]="printableGalleryPhoto()"
+        alt="Club members at a public radio event"
+      />
+      <figcaption>On the air, in the field, and serving Jefferson County.</figcaption>
+    </figure>
+  </section>
+
+  <table class="calendar-pdf-grid">
+    <thead>
+      <tr>
+        @for (weekday of weekdayNames; track weekday) {
+          <th>{{ weekday }}</th>
+        }
+      </tr>
+    </thead>
+
+    <tbody>
+      @for (week of printableCalendarRows(); track $index) {
+        <tr>
+          @for (day of week; track $index) {
+            <td [class.calendar-pdf-empty]="day.day === null">
+              @if (day.day !== null) {
+                <div class="calendar-pdf-day">{{ day.day }}</div>
+
+                @for (event of day.events; track event.id) {
+                  <div [class]="printableEventClasses(event.type)">
+                    {{ formatPrintableEvent(event) }}
+                  </div>
+                }
+              }
+            </td>
+          }
+        </tr>
+      }
+    </tbody>
+  </table>
+
+  <footer class="calendar-pdf-footer">
+    <p>Visit us online at <span>www.JCARCMo.com</span></p>
+    <small>We do our best to ensure that this calendar is accurate, but things may change!</small>
+  </footer>
+</section>

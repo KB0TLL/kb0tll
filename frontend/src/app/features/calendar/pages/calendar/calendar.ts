@@ -45,6 +45,21 @@ export class Calendar implements OnInit {
 
   private readonly calendarEventsUrl = '/api/calendar-events';
 
+  private readonly printableGalleryPhotos = [
+    'images/photo_gallery/004_twin_city_days_booth_2025_img_6780_scaled.jpg',
+    'images/photo_gallery/008_twin_city_days_booth_2025_img_6778_scaled.jpg',
+    'images/photo_gallery/019_christmas_party_december_72024_img_0579_scaled.jpg',
+    'images/photo_gallery/044_club_tower_raising_2024_img_7198_1.jpg',
+    'images/photo_gallery/049_club_tower_raising_2024_img_0120_scaled.jpg',
+    'images/photo_gallery/064_twin_city_days_2024_img_0139_scaled.jpg',
+    'images/photo_gallery/072_field_day_2024_img_9839_scaled.jpg',
+    'images/photo_gallery/086_field_day_2024_img_9824_scaled.jpg',
+    'images/photo_gallery/088_assorted_club_photos_img_6862_1_scaled.jpg',
+    'images/photo_gallery/092_assorted_club_photos_img_9956.jpg',
+    'images/photo_gallery/124_assorted_club_photos_club_station.jpg',
+    'images/photo_gallery/129_assorted_club_photos_field_day.jpg',
+  ];
+
   protected readonly monthNames = [
     'January',
     'February',
@@ -80,6 +95,8 @@ export class Calendar implements OnInit {
   protected readonly calendarError = signal<string | null>(null);
 
   protected readonly events = signal<CalendarEvent[]>([]);
+
+  protected readonly printableGalleryPhoto = signal(this.printableGalleryPhotos[1]);
 
   protected newEvent = {
     date: this.toDateKey(new Date()),
@@ -127,6 +144,17 @@ export class Calendar implements OnInit {
       date,
       events,
     }));
+  });
+
+  protected readonly printableCalendarRows = computed(() => {
+    const days = this.calendarDays();
+    const rows: CalendarDay[][] = [];
+
+    for (let index = 0; index < days.length; index += 7) {
+      rows.push(days.slice(index, index + 7));
+    }
+
+    return rows;
   });
 
   ngOnInit(): void {
@@ -241,6 +269,23 @@ export class Calendar implements OnInit {
     });
   }
 
+  protected formatAtAGlanceEvent(event: CalendarEvent): string {
+    const eventDate = new Date(`${event.date}T00:00:00`);
+    const dateLabel = eventDate.toLocaleDateString([], {
+      month: 'short',
+      day: 'numeric',
+    });
+    const timeLabel = this.formatTime(event.time);
+
+    return `${dateLabel} ${event.title}${timeLabel ? ` ${timeLabel}` : ''}`;
+  }
+
+  protected formatPrintableEvent(event: CalendarEvent): string {
+    const timeLabel = this.formatTime(event.time);
+
+    return `${event.title}${timeLabel ? ` - ${timeLabel}` : ''}`;
+  }
+
   protected eventTypeLabel(type: CalendarEventType): string {
     switch (type) {
       case 'meeting':
@@ -282,6 +327,17 @@ export class Calendar implements OnInit {
         return 'bg-blue-600';
       case 'event':
         return 'bg-emerald-600';
+    }
+  }
+
+  protected printableEventClasses(type: CalendarEventType): string {
+    switch (type) {
+      case 'meeting':
+        return 'calendar-pdf-event calendar-pdf-event-meeting';
+      case 'net':
+        return 'calendar-pdf-event calendar-pdf-event-net';
+      case 'event':
+        return 'calendar-pdf-event calendar-pdf-event-special';
     }
   }
 
@@ -344,6 +400,32 @@ export class Calendar implements OnInit {
 
   protected toggleAddForm(): void {
     this.showAddForm.set(!this.showAddForm());
+  }
+
+  protected exportPdf(): void {
+    this.closeEventDetail();
+    this.printableGalleryPhoto.set(this.getRandomPrintableGalleryPhoto());
+
+    document.body.classList.add('calendar-printing');
+
+    const cleanup = () => {
+      document.body.classList.remove('calendar-printing');
+    };
+
+    window.addEventListener('afterprint', cleanup, { once: true });
+    window.print();
+  }
+
+  private getRandomPrintableGalleryPhoto(): string {
+    if (this.printableGalleryPhotos.length === 1) {
+      return this.printableGalleryPhotos[0];
+    }
+
+    const currentPhoto = this.printableGalleryPhoto();
+    const availablePhotos = this.printableGalleryPhotos.filter((photo) => photo !== currentPhoto);
+    const index = Math.floor(Math.random() * availablePhotos.length);
+
+    return availablePhotos[index];
   }
 
   private loadEvents(): void {
