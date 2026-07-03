@@ -486,12 +486,9 @@ export class Calendar implements OnInit {
     window.addEventListener('afterprint', cleanup);
     window.addEventListener('focus', cleanup, { once: true });
 
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        window.print();
-        window.setTimeout(cleanup, 30000);
-      });
-    });
+    document.body.getBoundingClientRect();
+    window.print();
+    window.setTimeout(cleanup, 30000);
   }
 
   private getRandomPrintableGalleryPhoto(): string {
