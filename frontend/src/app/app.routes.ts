@@ -14,6 +14,15 @@ export const routes: Routes = [
     title: 'About | KB0TLL',
   },
   {
+    path: 'calendar/print',
+    loadComponent: () =>
+      import('./features/calendar/pages/calendar/calendar').then(
+        (m) => m.Calendar
+      ),
+    title: 'Print Calendar | KB0TLL',
+    data: { printView: true },
+  },
+  {
     path: 'calendar',
     loadComponent: () =>
       import('./features/calendar/pages/calendar/calendar').then(

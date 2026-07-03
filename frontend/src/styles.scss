@@ -12,17 +12,50 @@ body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
-@media print {
+.calendar-print-toolbar {
+  align-items: center;
+  background: #26310d;
+  border-bottom: 4px solid #7b9b22;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  padding: 0.9rem 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.calendar-print-back,
+.calendar-print-button {
+  border-radius: 0.35rem;
+  font-size: 0.875rem;
+  font-weight: 850;
+  padding: 0.72rem 0.9rem;
+}
+
+.calendar-print-back {
+  color: white;
+}
+
+.calendar-print-button {
+  background: #7b9b22;
+  color: white;
+}
+
+@media print, screen {
   * {
     print-color-adjust: exact;
     -webkit-print-color-adjust: exact;
   }
 
+  body.calendar-print-view app-site-header,
+  body.calendar-print-view app-site-footer,
   body.calendar-printing app-site-header,
   body.calendar-printing app-site-footer {
     display: none !important;
   }
 
+  body.calendar-print-view,
   body.calendar-printing {
     background: white;
     margin: 0;
@@ -32,6 +65,7 @@ body {
     display: none !important;
   }
 
+  body.calendar-print-view .calendar-pdf,
   body.calendar-printing .calendar-pdf {
     box-sizing: border-box;
     color: #243042;
@@ -45,6 +79,7 @@ body {
     width: 100%;
   }
 
+  body.calendar-print-view .calendar-pdf::before,
   body.calendar-printing .calendar-pdf::before {
     background: linear-gradient(90deg, #26310d 0%, #7b9b22 48%, #a4141b 100%);
     content: '';
@@ -55,12 +90,17 @@ body {
     top: 0;
   }
 
+  body.calendar-print-view .calendar-pdf::after,
   body.calendar-printing .calendar-pdf::after {
     border: 1px solid #d7dec7;
     content: '';
     inset: 0.18in;
     pointer-events: none;
     position: fixed;
+  }
+
+  body.calendar-printing .calendar-print-toolbar {
+    display: none !important;
   }
 
   .calendar-pdf-header {

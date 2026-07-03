@@ -1,3 +1,4 @@
+@if (!isPrintView()) {
 <div class="calendar-screen">
 <section class="calendar-hero">
   <div class="calendar-container py-7">
@@ -430,8 +431,21 @@
 }
 
 </div>
+} @else {
+  <section class="calendar-print-toolbar" aria-label="Print actions">
+    <a href="/calendar" class="calendar-print-back">Back to Calendar</a>
 
-<section class="calendar-pdf" aria-label="Printable calendar">
+    <button
+      type="button"
+      (click)="printCurrentPage()"
+      class="calendar-print-button"
+    >
+      Save / Print PDF
+    </button>
+  </section>
+}
+
+<section class="calendar-pdf" [class.calendar-pdf-visible]="isPrintView()" aria-label="Printable calendar">
   <header class="calendar-pdf-header">
     <div class="calendar-pdf-month">
       <div class="calendar-pdf-brand">

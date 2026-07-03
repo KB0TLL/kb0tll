@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Component, HostListener, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucidePencil } from '@ng-icons/lucide';
 import { forkJoin } from 'rxjs';
@@ -44,8 +45,9 @@ type TooltipPosition = {
   templateUrl: './calendar.html',
   styleUrl: './calendar.scss',
 })
-export class Calendar implements OnInit {
+export class Calendar implements OnInit, OnDestroy {
   private readonly http = inject(HttpClient);
+  private readonly route = inject(ActivatedRoute);
 
   private readonly calendarEventsUrl = '/api/calendar-events';
 
@@ -97,6 +99,8 @@ export class Calendar implements OnInit {
   protected readonly showAddForm = signal<boolean>(true);
 
   protected readonly showAdminLogin = signal<boolean>(false);
+
+  protected readonly isPrintView = signal<boolean>(false);
 
   protected readonly isLoadingEvents = signal<boolean>(false);
 
@@ -171,8 +175,13 @@ export class Calendar implements OnInit {
   });
 
   ngOnInit(): void {
+    this.configurePrintView();
     this.loadAdminToken();
     this.loadEvents();
+  }
+
+  ngOnDestroy(): void {
+    document.body.classList.remove('calendar-print-view', 'calendar-printing');
   }
 
   protected previousMonth(): void {
@@ -472,8 +481,23 @@ export class Calendar implements OnInit {
   }
 
   protected exportPdf(): void {
+    if (!this.isPrintView()) {
+      const { year, month } = this.displayDate();
+      const printUrl = `/calendar/print?year=${year}&month=${month}`;
+      const printWindow = window.open(printUrl, '_blank', 'noopener,noreferrer');
+
+      if (!printWindow) {
+        window.location.href = printUrl;
+      }
+
+      return;
+    }
+
+    this.printCurrentPage();
+  }
+
+  protected printCurrentPage(): void {
     this.closeEventDetail();
-    this.printableGalleryPhoto.set(this.getRandomPrintableGalleryPhoto());
 
     document.body.classList.add('calendar-printing');
 
@@ -489,6 +513,23 @@ export class Calendar implements OnInit {
     document.body.getBoundingClientRect();
     window.print();
     window.setTimeout(cleanup, 30000);
+  }
+
+  private configurePrintView(): void {
+    if (this.route.snapshot.data['printView'] !== true) {
+      return;
+    }
+
+    const year = Number(this.route.snapshot.queryParamMap.get('year'));
+    const month = Number(this.route.snapshot.queryParamMap.get('month'));
+
+    if (Number.isInteger(year) && Number.isInteger(month) && month >= 0 && month <= 11) {
+      this.displayDate.set({ year, month });
+    }
+
+    this.isPrintView.set(true);
+    this.printableGalleryPhoto.set(this.getRandomPrintableGalleryPhoto());
+    document.body.classList.add('calendar-print-view');
   }
 
   private getRandomPrintableGalleryPhoto(): string {
