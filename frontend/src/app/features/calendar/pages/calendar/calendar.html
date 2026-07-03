@@ -298,12 +298,6 @@
               <span class="text-sm font-semibold">
                 {{ day.day }}
               </span>
-
-              @if (day.events.length > 0) {
-                <span class="rounded-full bg-slate-200 px-1.5 py-0.5 text-[10px] font-black uppercase tracking-[0.18em] text-slate-700">
-                  {{ day.events.length }}
-                </span>
-              }
             </div>
 
             @if (day.events.length > 0) {
@@ -492,9 +486,4 @@
       }
     </tbody>
   </table>
-
-  <footer class="calendar-pdf-footer">
-    <p>Visit us online at <span>www.JCARCMo.com</span></p>
-    <small>We do our best to ensure that this calendar is accurate, but things may change!</small>
-  </footer>
 </section>
