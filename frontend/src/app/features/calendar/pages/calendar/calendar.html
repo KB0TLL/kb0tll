@@ -135,6 +135,18 @@
         <label class="mb-1 block text-xs font-bold uppercase tracking-[0.18em] text-slate-600">Notes</label>
         <textarea name="eventNotes" [(ngModel)]="newEvent.notes" rows="3" placeholder="Add notes" class="w-full resize-y rounded border border-slate-300 px-3 py-2 text-sm"></textarea>
       </div>
+
+      <label class="flex items-start gap-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-700">
+        <input
+          type="checkbox"
+          name="eventRecurringWeekly"
+          [(ngModel)]="newEvent.recurringWeekly"
+          class="mt-1"
+        />
+        <span>
+          Repeat weekly through the selected month
+        </span>
+      </label>
     </form>
   }
 

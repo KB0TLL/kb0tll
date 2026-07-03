@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, HostListener, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { forkJoin } from 'rxjs';
 
 type CalendarEventType = 'meeting' | 'net' | 'event';
 
@@ -116,6 +117,7 @@ export class Calendar implements OnInit {
     time: '09:00',
     type: 'meeting' as CalendarEventType,
     notes: '',
+    recurringWeekly: false,
   };
 
   protected readonly currentMonthLabel = computed(
@@ -214,14 +216,21 @@ export class Calendar implements OnInit {
       type: this.newEvent.type,
       notes: this.newEvent.notes,
     };
+    const eventsToCreate = this.newEvent.recurringWeekly
+      ? this.buildWeeklyRecurringEvents(event)
+      : [event];
 
-    this.http.post<CalendarEvent>(this.calendarEventsUrl, event, {
-      headers: this.getAdminHeaders(),
-    }).subscribe({
-      next: (savedEvent) => {
-        this.events.update((events) => [...events, savedEvent]);
+    forkJoin(
+      eventsToCreate.map((eventToCreate) =>
+        this.http.post<CalendarEvent>(this.calendarEventsUrl, eventToCreate, {
+          headers: this.getAdminHeaders(),
+        })
+      )
+    ).subscribe({
+      next: (savedEvents) => {
+        this.events.update((events) => [...events, ...savedEvents]);
 
-        const eventDate = new Date(`${savedEvent.date}T00:00:00`);
+        const eventDate = new Date(`${savedEvents[0].date}T00:00:00`);
 
         this.displayDate.set({
           year: eventDate.getFullYear(),
@@ -229,16 +238,18 @@ export class Calendar implements OnInit {
         });
 
         this.newEvent = {
-          date: savedEvent.date,
+          date: savedEvents[0].date,
           title: '',
           time: '09:00',
           type: 'meeting',
           notes: '',
+          recurringWeekly: false,
         };
         this.calendarError.set(null);
+        this.adminError.set(null);
       },
       error: () => {
-        this.calendarError.set('Could not save the event. Please try again.');
+        this.calendarError.set('Could not save the event or recurring events. Please try again.');
         this.adminError.set('Check your admin token and try again.');
       },
     });
@@ -477,6 +488,22 @@ export class Calendar implements OnInit {
     const index = Math.floor(Math.random() * availablePhotos.length);
 
     return availablePhotos[index];
+  }
+
+  private buildWeeklyRecurringEvents(event: CalendarEventInput): CalendarEventInput[] {
+    const events: CalendarEventInput[] = [];
+    const currentDate = new Date(`${event.date}T00:00:00`);
+    const month = currentDate.getMonth();
+
+    while (currentDate.getMonth() === month) {
+      events.push({
+        ...event,
+        date: this.toDateKey(currentDate),
+      });
+      currentDate.setDate(currentDate.getDate() + 7);
+    }
+
+    return events;
   }
 
   private loadAdminToken(): void {
