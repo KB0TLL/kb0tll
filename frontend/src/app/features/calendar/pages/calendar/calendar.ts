@@ -86,6 +86,8 @@ export class Calendar implements OnInit {
 
   protected readonly selectedEvent = signal<CalendarEvent | null>(null);
 
+  protected readonly selectedDay = signal<CalendarDay | null>(null);
+
   protected readonly tooltipPosition = signal<TooltipPosition | null>(null);
 
   protected readonly showAddForm = signal<boolean>(true);
@@ -393,12 +395,20 @@ export class Calendar implements OnInit {
   }
 
   protected selectEvent(event: CalendarEvent, triggerEvent: Event): void {
+    this.selectedDay.set(null);
     this.selectedEvent.set(event);
+    this.tooltipPosition.set(this.getTooltipPosition(triggerEvent));
+  }
+
+  protected selectDay(day: CalendarDay, triggerEvent: Event): void {
+    this.selectedEvent.set(null);
+    this.selectedDay.set(day);
     this.tooltipPosition.set(this.getTooltipPosition(triggerEvent));
   }
 
   protected closeEventDetail(): void {
     this.selectedEvent.set(null);
+    this.selectedDay.set(null);
     this.tooltipPosition.set(null);
   }
 
