@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, HostListener, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
@@ -45,6 +45,8 @@ export class Calendar implements OnInit {
 
   private readonly calendarEventsUrl = '/api/calendar-events';
 
+  private readonly adminTokenStorageKey = 'kb0tll-calendar-admin-token';
+
   private readonly printableGalleryPhotos = [
     'images/photo_gallery/004_twin_city_days_booth_2025_img_6780_scaled.jpg',
     'images/photo_gallery/008_twin_city_days_booth_2025_img_6778_scaled.jpg',
@@ -90,13 +92,23 @@ export class Calendar implements OnInit {
 
   protected readonly showAddForm = signal<boolean>(true);
 
+  protected readonly showAdminLogin = signal<boolean>(false);
+
   protected readonly isLoadingEvents = signal<boolean>(false);
 
   protected readonly calendarError = signal<string | null>(null);
 
+  protected readonly adminError = signal<string | null>(null);
+
   protected readonly events = signal<CalendarEvent[]>([]);
 
   protected readonly printableGalleryPhoto = signal(this.printableGalleryPhotos[1]);
+
+  protected readonly adminToken = signal<string>('');
+
+  protected readonly isAdmin = computed(() => this.adminToken().length > 0);
+
+  protected adminTokenInput = '';
 
   protected newEvent = {
     date: this.toDateKey(new Date()),
@@ -162,6 +174,7 @@ export class Calendar implements OnInit {
   });
 
   ngOnInit(): void {
+    this.loadAdminToken();
     this.loadEvents();
   }
 
@@ -202,7 +215,9 @@ export class Calendar implements OnInit {
       notes: this.newEvent.notes,
     };
 
-    this.http.post<CalendarEvent>(this.calendarEventsUrl, event).subscribe({
+    this.http.post<CalendarEvent>(this.calendarEventsUrl, event, {
+      headers: this.getAdminHeaders(),
+    }).subscribe({
       next: (savedEvent) => {
         this.events.update((events) => [...events, savedEvent]);
 
@@ -224,12 +239,15 @@ export class Calendar implements OnInit {
       },
       error: () => {
         this.calendarError.set('Could not save the event. Please try again.');
+        this.adminError.set('Check your admin token and try again.');
       },
     });
   }
 
   protected removeEvent(eventId: number): void {
-    this.http.delete(`${this.calendarEventsUrl}/${eventId}`).subscribe({
+    this.http.delete(`${this.calendarEventsUrl}/${eventId}`, {
+      headers: this.getAdminHeaders(),
+    }).subscribe({
       next: () => {
         this.events.update((events) => events.filter((event) => event.id !== eventId));
 
@@ -241,6 +259,7 @@ export class Calendar implements OnInit {
       },
       error: () => {
         this.calendarError.set('Could not remove the event. Please try again.');
+        this.adminError.set('Check your admin token and try again.');
       },
     });
   }
@@ -406,6 +425,34 @@ export class Calendar implements OnInit {
     this.showAddForm.set(!this.showAddForm());
   }
 
+  protected toggleAdminLogin(): void {
+    this.showAdminLogin.set(!this.showAdminLogin());
+    this.adminError.set(null);
+  }
+
+  protected unlockAdmin(): void {
+    const token = this.adminTokenInput.trim();
+
+    if (!token) {
+      this.adminError.set('Enter the admin token.');
+      return;
+    }
+
+    this.adminToken.set(token);
+    localStorage.setItem(this.adminTokenStorageKey, token);
+    this.adminTokenInput = '';
+    this.adminError.set(null);
+    this.showAdminLogin.set(false);
+  }
+
+  protected signOutAdmin(): void {
+    this.adminToken.set('');
+    this.adminTokenInput = '';
+    localStorage.removeItem(this.adminTokenStorageKey);
+    this.adminError.set(null);
+    this.showAddForm.set(false);
+  }
+
   protected exportPdf(): void {
     this.closeEventDetail();
     this.printableGalleryPhoto.set(this.getRandomPrintableGalleryPhoto());
@@ -430,6 +477,20 @@ export class Calendar implements OnInit {
     const index = Math.floor(Math.random() * availablePhotos.length);
 
     return availablePhotos[index];
+  }
+
+  private loadAdminToken(): void {
+    const token = localStorage.getItem(this.adminTokenStorageKey);
+
+    if (token) {
+      this.adminToken.set(token);
+    }
+  }
+
+  private getAdminHeaders(): HttpHeaders {
+    return new HttpHeaders({
+      'X-Admin-Token': this.adminToken(),
+    });
   }
 
   private loadEvents(): void {
