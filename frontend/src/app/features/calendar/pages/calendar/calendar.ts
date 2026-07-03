@@ -88,8 +88,6 @@ export class Calendar implements OnInit {
 
   protected readonly tooltipPosition = signal<TooltipPosition | null>(null);
 
-  protected readonly expandedDayDateKey = signal<string | null>(null);
-
   protected readonly showAddForm = signal<boolean>(true);
 
   protected readonly isLoadingEvents = signal<boolean>(false);
@@ -347,14 +345,6 @@ export class Calendar implements OnInit {
     }
   }
 
-  protected visibleDayEvents(day: CalendarDay): CalendarEvent[] {
-    if (this.expandedDayDateKey() === day.dateKey) {
-      return day.events;
-    }
-
-    return day.events.slice(0, 2);
-  }
-
   private buildCalendarDays(): CalendarDay[] {
     const { year, month } = this.displayDate();
     const firstDayOfWeek = new Date(year, month, 1).getDay();
@@ -405,14 +395,6 @@ export class Calendar implements OnInit {
   protected selectEvent(event: CalendarEvent, triggerEvent: Event): void {
     this.selectedEvent.set(event);
     this.tooltipPosition.set(this.getTooltipPosition(triggerEvent));
-  }
-
-  protected toggleExpandedDay(day: CalendarDay): void {
-    if (!day.dateKey) {
-      return;
-    }
-
-    this.expandedDayDateKey.set(this.expandedDayDateKey() === day.dateKey ? null : day.dateKey);
   }
 
   protected closeEventDetail(): void {

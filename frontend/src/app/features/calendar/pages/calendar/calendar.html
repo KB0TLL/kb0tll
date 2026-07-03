@@ -243,7 +243,7 @@
 
             @if (day.events.length > 0) {
               <div class="mt-1.5 space-y-1">
-                @for (event of visibleDayEvents(day); track event.id) {
+                @for (event of day.events; track event.id) {
                   <div
                     role="button"
                     tabindex="0"
@@ -280,22 +280,6 @@
                       </button>
                     </div>
                   </div>
-                }
-                
-                @if (day.events.length > 2) {
-                  <button
-                    type="button"
-                    (click)="toggleExpandedDay(day); $event.stopPropagation()"
-                    class="w-full rounded bg-slate-100 px-1.5 py-0.5 text-left text-[10px] font-semibold text-slate-700 transition hover:bg-slate-200"
-                    [attr.aria-expanded]="expandedDayDateKey() === day.dateKey"
-                    aria-label="Toggle all events for this day"
-                  >
-                    @if (expandedDayDateKey() === day.dateKey) {
-                      Show less
-                    } @else {
-                      +{{ day.events.length - 2 }} more
-                    }
-                  </button>
                 }
               </div>
             }
