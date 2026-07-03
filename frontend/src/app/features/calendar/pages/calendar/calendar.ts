@@ -129,21 +129,13 @@ export class Calendar implements OnInit {
   protected readonly currentMonthEvents = computed(() => {
     const { year, month } = this.displayDate();
 
-    return this.events()
-      .filter((event) => {
+    return this.sortEvents(
+      this.events().filter((event) => {
         const eventDate = new Date(`${event.date}T00:00:00`);
 
         return eventDate.getFullYear() === year && eventDate.getMonth() === month;
       })
-      .sort((a, b) => {
-        const dateCompare = a.date.localeCompare(b.date);
-
-        if (dateCompare !== 0) {
-          return dateCompare;
-        }
-
-        return a.time.localeCompare(b.time);
-      });
+    );
   });
 
   protected readonly currentMonthEventGroups = computed<CalendarEventGroup[]>(() => {
@@ -395,7 +387,7 @@ export class Calendar implements OnInit {
       calendarDays.push({
         day,
         dateKey,
-        events: this.events().filter((event) => event.date === dateKey),
+        events: this.sortEvents(this.events().filter((event) => event.date === dateKey)),
       });
     }
 
@@ -416,6 +408,18 @@ export class Calendar implements OnInit {
     const day = String(date.getDate()).padStart(2, '0');
 
     return `${year}-${month}-${day}`;
+  }
+
+  private sortEvents(events: CalendarEvent[]): CalendarEvent[] {
+    return [...events].sort((a, b) => {
+      const dateCompare = a.date.localeCompare(b.date);
+
+      if (dateCompare !== 0) {
+        return dateCompare;
+      }
+
+      return (a.time || '99:99').localeCompare(b.time || '99:99');
+    });
   }
 
   protected setViewMode(mode: CalendarViewMode): void {
