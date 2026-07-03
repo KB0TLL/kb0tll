@@ -3,11 +3,12 @@ from __future__ import annotations
 import os
 import sqlite3
 import datetime as dt
-from contextlib import contextmanager
+from hmac import compare_digest
+from contextlib import asynccontextmanager, contextmanager
 from pathlib import Path
-from typing import Any, Iterator, Literal
+from typing import Any, AsyncIterator, Iterator, Literal
 
-from fastapi import FastAPI, HTTPException, Response
+from fastapi import Depends, FastAPI, Header, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, field_validator
@@ -31,6 +32,7 @@ FRONTEND_DIST = Path(
 )
 SQLITE_PATH = Path(os.getenv("SQLITE_PATH", BASE_DIR / "data" / "calendar-events.db"))
 DATABASE_URL = os.getenv("DATABASE_URL")
+ADMIN_TOKEN = os.getenv("ADMIN_TOKEN")
 
 
 class CalendarEventInput(BaseModel):
@@ -58,7 +60,13 @@ class CalendarEvent(BaseModel):
     notes: str = ""
 
 
-app = FastAPI(title="KB0TLL API")
+@asynccontextmanager
+async def lifespan(_: FastAPI) -> AsyncIterator[None]:
+    create_calendar_events_table()
+    yield
+
+
+app = FastAPI(title="KB0TLL API", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -69,13 +77,16 @@ app.add_middleware(
     ],
     allow_credentials=False,
     allow_methods=["GET", "POST", "DELETE", "OPTIONS"],
-    allow_headers=["Content-Type"],
+    allow_headers=["Content-Type", "X-Admin-Token"],
 )
 
 
-@app.on_event("startup")
-def initialize_database() -> None:
-    create_calendar_events_table()
+def require_admin(x_admin_token: str | None = Header(default=None, alias="X-Admin-Token")) -> None:
+    if not ADMIN_TOKEN:
+        raise HTTPException(status_code=503, detail="Admin token is not configured")
+
+    if not x_admin_token or not compare_digest(x_admin_token, ADMIN_TOKEN):
+        raise HTTPException(status_code=401, detail="Admin access required")
 
 
 @app.get("/api/health")
@@ -99,7 +110,10 @@ def list_calendar_events() -> list[dict[str, Any]]:
 
 
 @app.post("/api/calendar-events", response_model=CalendarEvent, status_code=201)
-def create_calendar_event(event: CalendarEventInput) -> dict[str, Any]:
+def create_calendar_event(
+    event: CalendarEventInput,
+    _: None = Depends(require_admin),
+) -> dict[str, Any]:
     with get_connection() as connection:
         if is_postgres_connection(connection):
             row = execute_fetch_one(
@@ -135,7 +149,10 @@ def create_calendar_event(event: CalendarEventInput) -> dict[str, Any]:
 
 
 @app.delete("/api/calendar-events/{event_id}", status_code=204)
-def delete_calendar_event(event_id: int) -> Response:
+def delete_calendar_event(
+    event_id: int,
+    _: None = Depends(require_admin),
+) -> Response:
     with get_connection() as connection:
         cursor = connection.execute(
             "delete from calendar_events where id = %s" if is_postgres_connection(connection) else "delete from calendar_events where id = ?",

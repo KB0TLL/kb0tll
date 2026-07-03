@@ -11,10 +11,8 @@ For local development, run the backend and frontend in separate terminals:
 
 ```sh
 cd backend
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-uvicorn app.main:app --reload
+poetry install --no-root
+poetry run uvicorn app.main:app --reload
 ```
 
 ```sh
@@ -28,13 +26,14 @@ For Render, create a Python web service with:
 
 ```sh
 root directory: backend
-build command: pip install -r requirements.txt
-start command: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+build command: pip install poetry && poetry install --no-root
+start command: poetry run uvicorn app.main:app --host 0.0.0.0 --port $PORT
 ```
 
 If Render logs show `gunicorn your_application.wsgi`, open the Render service
-settings and replace the Start Command with the `uvicorn` command above. That
-default command is for Django-style WSGI apps, not this FastAPI app.
+settings and replace the Start Command with the `poetry run uvicorn` command
+above. That default command is for Django-style WSGI apps, not this FastAPI app.
 
-Set `DATABASE_URL` from Neon and `CORS_ALLOWED_ORIGINS` to your public frontend
-origin, for example `https://your-site.vercel.app`.
+Set `DATABASE_URL` from Neon, `ADMIN_TOKEN` to a long private value, and
+`CORS_ALLOWED_ORIGINS` to your public frontend origin, for example
+`https://your-site.vercel.app`.
