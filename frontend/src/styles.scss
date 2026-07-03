@@ -13,6 +13,11 @@ body {
 }
 
 @media print {
+  * {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
   body.calendar-printing app-site-header,
   body.calendar-printing app-site-footer {
     display: none !important;
@@ -30,17 +35,39 @@ body {
   body.calendar-printing .calendar-pdf {
     box-sizing: border-box;
     color: #243042;
-    display: block;
+    display: flex;
+    flex-direction: column;
     font-family: Inter, Arial, Helvetica, sans-serif;
+    justify-content: space-between;
     min-height: 11in;
-    padding: 0.38in 0.3in 0.2in;
+    padding: 0.45in 0.3in 0.3in;
+    position: relative;
     width: 100%;
+  }
+
+  body.calendar-printing .calendar-pdf::before {
+    background: linear-gradient(90deg, #26310d 0%, #7b9b22 48%, #a4141b 100%);
+    content: '';
+    height: 0.08in;
+    left: 0;
+    position: fixed;
+    right: 0;
+    top: 0;
+  }
+
+  body.calendar-printing .calendar-pdf::after {
+    border: 1px solid #d7dec7;
+    content: '';
+    inset: 0.18in;
+    pointer-events: none;
+    position: fixed;
   }
 
   .calendar-pdf-header {
     margin: 0 auto;
     max-width: 7.6in;
     overflow: hidden;
+    width: 7.6in;
   }
 
   .calendar-pdf-month {
@@ -48,13 +75,15 @@ body {
     background:
       linear-gradient(115deg, rgb(33 45 9 / 92%) 0%, rgb(75 101 8 / 90%) 55%, rgb(15 23 42 / 92%) 100%),
       url('/images/photo_gallery/003_gallery_photo_gallery_banner_1_qlnvb8xkz7tcben72rr6tzes7dya10q53v5iel0mvk.jpg');
-    background-position: center;
+    background-position: center 34%;
     background-size: cover;
+    border-bottom: 0.08in solid #7b9b22;
+    box-shadow: 0 10px 22px rgb(15 23 42 / 14%);
     color: white;
     display: flex;
     justify-content: space-between;
-    min-height: 1.55in;
-    padding: 0.16in 0.24in 0.26in;
+    min-height: 1.48in;
+    padding: 0.18in 0.25in 0.22in;
     position: relative;
   }
 
@@ -76,6 +105,7 @@ body {
 
   .calendar-pdf-brand img {
     background: white;
+    border: 2px solid rgb(255 255 255 / 80%);
     border-radius: 999px;
     box-shadow: 0 4px 14px rgb(0 0 0 / 28%);
     height: 0.68in;
@@ -100,6 +130,8 @@ body {
   }
 
   .calendar-pdf-title {
+    border-right: 0.04in solid rgb(255 255 255 / 72%);
+    padding-right: 0.12in;
     max-width: 3.25in;
     position: relative;
     text-align: right;
@@ -128,11 +160,11 @@ body {
   .calendar-pdf-summary {
     align-items: stretch;
     display: flex;
-    gap: 0.14in;
-    justify-content: space-between;
-    margin: -0.16in auto 0.14in;
-    max-width: 7.22in;
-    min-height: 1.55in;
+    gap: 0.18in;
+    justify-content: center;
+    margin: 0 auto;
+    max-width: 6.55in;
+    min-height: 1.42in;
     position: relative;
     z-index: 2;
   }
@@ -140,9 +172,10 @@ body {
   .calendar-pdf-glance {
     background: white;
     border-top: 0.04in solid #7b9b22;
+    border-left: 1px solid #e5ead8;
     box-shadow: 0 8px 20px rgb(15 23 42 / 16%);
-    flex: 1;
-    padding: 0.13in 0.16in 0.12in;
+    flex: 1 1 3.55in;
+    padding: 0.14in 0.17in 0.13in;
   }
 
   .calendar-pdf-kicker {
@@ -184,16 +217,17 @@ body {
 
   .calendar-pdf-photo {
     background: white;
+    border: 1px solid #eef1e7;
     box-shadow: 0 8px 20px rgb(15 23 42 / 18%);
-    margin: 0;
+    margin: 0.02in 0 0;
     padding: 0.06in;
-    transform: rotate(1.5deg);
-    width: 2.05in;
+    transform: rotate(0.8deg);
+    width: 2.32in;
   }
 
   .calendar-pdf-photo img {
     display: block;
-    height: 1.18in;
+    height: 1.32in;
     object-fit: cover;
     width: 100%;
   }
@@ -210,6 +244,7 @@ body {
   .calendar-pdf-grid {
     border-collapse: separate;
     border-spacing: 0;
+    box-shadow: 0 8px 22px rgb(15 23 42 / 9%);
     margin: 0 auto;
     max-width: 7.6in;
     table-layout: fixed;
@@ -223,7 +258,7 @@ body {
     color: white;
     font-size: 6.8pt;
     font-weight: 900;
-    height: 0.18in;
+    height: 0.22in;
     letter-spacing: 0.05em;
     padding: 0.025in;
     text-align: center;
@@ -231,30 +266,38 @@ body {
   }
 
   .calendar-pdf-grid td {
-    background: rgb(255 255 255 / 92%);
+    background: #ffffff;
     border: 0;
     border-bottom: 1px solid #d8dee8;
     border-right: 1px solid #d8dee8;
-    height: 0.74in;
-    padding: 0.03in;
-    text-align: center;
+    height: 0.78in;
+    padding: 0.045in 0.035in;
+    text-align: left;
     vertical-align: top;
   }
 
   .calendar-pdf-empty {
-    background: #f6f7f3;
+    background: #f3f5ee;
   }
 
   .calendar-pdf-grid tbody tr:nth-child(even) td:not(.calendar-pdf-empty) {
-    background: #fbfcf8;
+    background: #fbfcf6;
   }
 
   .calendar-pdf-day {
-    color: #6f8f12;
-    font-size: 7pt;
+    align-items: center;
+    background: #eef4dc;
+    border-radius: 999px;
+    color: #536f0d;
+    display: inline-flex;
+    font-size: 7.2pt;
     font-weight: 900;
+    height: 0.16in;
+    justify-content: center;
     line-height: 1;
-    margin-bottom: 0.02in;
+    margin-bottom: 0.03in;
+    min-width: 0.16in;
+    padding: 0 0.035in;
   }
 
   .calendar-pdf-event {
@@ -263,7 +306,7 @@ body {
     font-size: 6.15pt;
     font-weight: 750;
     line-height: 1.15;
-    margin: 0 auto 0.02in;
+    margin: 0 0 0.025in;
     max-width: 0.95in;
     overflow-wrap: anywhere;
     padding: 0.018in 0.02in;
@@ -284,6 +327,36 @@ body {
     background: #dcfce7;
     color: #14532d;
     font-weight: 900;
+  }
+
+  .calendar-pdf-footer {
+    align-items: center;
+    background: #26310d;
+    border-top: 0.035in solid #7b9b22;
+    box-shadow: 0 6px 16px rgb(15 23 42 / 10%);
+    color: white;
+    display: flex;
+    font-size: 7.5pt;
+    font-weight: 850;
+    gap: 0.12in;
+    justify-content: center;
+    letter-spacing: 0.08em;
+    line-height: 1;
+    margin: 0 auto;
+    max-width: 7.6in;
+    min-height: 0.28in;
+    padding: 0.04in 0.14in;
+    text-transform: uppercase;
+    width: 7.32in;
+  }
+
+  .calendar-pdf-footer strong {
+    font-size: 8.2pt;
+  }
+
+  .calendar-pdf-footer span {
+    border-left: 1px solid rgb(255 255 255 / 38%);
+    padding-left: 0.12in;
   }
 
 }

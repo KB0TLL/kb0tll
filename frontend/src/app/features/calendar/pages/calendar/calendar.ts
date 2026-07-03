@@ -1,6 +1,8 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, HostListener, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { lucidePencil } from '@ng-icons/lucide';
 import { forkJoin } from 'rxjs';
 
 type CalendarEventType = 'meeting' | 'net' | 'event';
@@ -37,7 +39,8 @@ type TooltipPosition = {
 @Component({
   selector: 'app-calendar',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, NgIcon],
+  providers: [provideIcons({ lucidePencil })],
   templateUrl: './calendar.html',
   styleUrl: './calendar.scss',
 })

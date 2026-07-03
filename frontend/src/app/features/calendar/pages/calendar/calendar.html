@@ -1,22 +1,30 @@
 <div class="calendar-screen">
-<section class="bg-white">
-  <div class="mx-auto max-w-[1120px] px-4 py-6">
-    <div class="flex flex-col gap-3 rounded-xl border-4 border-red-600 bg-white p-4 shadow-lg sm:flex-row sm:items-center sm:justify-between">
-      <div>
-        <p class="text-sm uppercase tracking-[0.4em] text-slate-500">
-          Club Calendar
-        </p>
+<section class="calendar-hero">
+  <div class="calendar-container py-7">
+    <div class="calendar-hero-panel">
+      <div class="flex items-center gap-4">
+        <img src="images/kb0tll.png" alt="KB0TLL logo" class="calendar-hero-logo" />
 
-        <h1 class="mt-2 text-4xl font-light text-slate-950 sm:text-5xl">
-          {{ currentMonthLabel() }}
-        </h1>
+        <div>
+          <p class="calendar-kicker">
+            Jefferson County Amateur Radio Club
+          </p>
+
+          <h1 class="calendar-hero-title">
+            {{ currentMonthLabel() }}
+          </h1>
+
+          <p class="calendar-hero-subtitle">
+            Meetings, nets, training, and community radio events
+          </p>
+        </div>
       </div>
 
-      <div class="flex items-center gap-2">
+      <div class="calendar-action-bar">
         <button
           type="button"
           (click)="previousMonth()"
-          class="rounded border border-slate-300 bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-slate-200"
+          class="calendar-button calendar-button-light"
         >
           Previous
         </button>
@@ -24,7 +32,7 @@
         <button
           type="button"
           (click)="nextMonth()"
-          class="rounded border border-slate-300 bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-slate-200"
+          class="calendar-button calendar-button-light"
         >
           Next
         </button>
@@ -32,53 +40,43 @@
         <button
           type="button"
           (click)="exportPdf()"
-          class="rounded border border-green-700 bg-green-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-green-800"
+          class="calendar-button calendar-button-primary"
         >
           Export PDF
         </button>
-
-        @if (isAdmin()) {
-          <button
-            type="button"
-            (click)="signOutAdmin()"
-            class="rounded border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
-          >
-            Admin Out
-          </button>
-        } @else {
-          <button
-            type="button"
-            (click)="toggleAdminLogin()"
-            class="rounded border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
-          >
-            Admin
-          </button>
-        }
       </div>
     </div>
   </div>
 </section>
 
-<section class="mx-auto max-w-[1120px] px-4 pb-6">
-  <div class="mb-3 flex items-center justify-between">
-    <h2 class="text-lg font-bold text-slate-900">
-      {{ isAdmin() ? 'Add Event' : 'Calendar Access' }}
-    </h2>
+@if (isAdmin() || showAdminLogin() || adminError() || calendarError()) {
+<section class="calendar-container pt-6 pb-6">
+  <div class="calendar-panel">
+  @if (isAdmin() || showAdminLogin()) {
+    <div class="mb-3 flex items-center justify-between">
+      <h2 class="calendar-section-title">
+        {{ isAdmin() ? 'Add Event' : 'Admin Access' }}
+      </h2>
 
-    @if (isAdmin()) {
-      <button
-        type="button"
-        (click)="toggleAddForm()"
-        class="inline-flex items-center gap-2 rounded border border-slate-200 bg-white px-3 py-1 text-sm font-semibold text-slate-700 hover:bg-slate-50"
-      >
-        {{ showAddForm() ? 'Hide' : 'Add' }}
-      </button>
-    } @else {
-      <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-700">
-        View only
-      </span>
+      @if (isAdmin()) {
+        <button
+          type="button"
+          (click)="toggleAddForm()"
+          class="calendar-mini-button"
+        >
+          {{ showAddForm() ? 'Hide' : 'Add' }}
+        </button>
+      } @else {
+        <button
+          type="button"
+          (click)="toggleAdminLogin()"
+          class="calendar-mini-button calendar-mini-button-muted"
+        >
+          Cancel
+        </button>
+      }
+    </div>
     }
-  </div>
 
   @if (!isAdmin() && showAdminLogin()) {
     <form (ngSubmit)="unlockAdmin()" class="mb-4 flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:flex-row sm:items-end">
@@ -161,18 +159,17 @@
       {{ calendarError() }}
     </p>
   }
+  </div>
 </section>
+}
 
-<section class="mx-auto hidden max-w-[1120px] px-4 pb-6 md:block">
-  <div class="inline-flex rounded-lg border border-slate-300 bg-white p-1 shadow-sm">
+<section class="calendar-container hidden pb-6 md:block">
+  <div class="calendar-view-tabs">
     <button
       type="button"
       (click)="setViewMode('calendar')"
-      class="rounded-md px-4 py-2 text-sm font-bold transition"
-      [class.bg-red-600]="viewMode() === 'calendar'"
-      [class.text-white]="viewMode() === 'calendar'"
-      [class.text-slate-700]="viewMode() !== 'calendar'"
-      [class.hover:bg-slate-100]="viewMode() !== 'calendar'"
+      class="calendar-tab"
+      [class.calendar-tab-active]="viewMode() === 'calendar'"
     >
       Calendar View
     </button>
@@ -180,11 +177,8 @@
     <button
       type="button"
       (click)="setViewMode('list')"
-      class="rounded-md px-4 py-2 text-sm font-bold transition"
-      [class.bg-red-600]="viewMode() === 'list'"
-      [class.text-white]="viewMode() === 'list'"
-      [class.text-slate-700]="viewMode() !== 'list'"
-      [class.hover:bg-slate-100]="viewMode() !== 'list'"
+      class="calendar-tab"
+      [class.calendar-tab-active]="viewMode() === 'list'"
     >
       List View
     </button>
@@ -192,10 +186,10 @@
 </section>
 
 <section
-  class="mx-auto max-w-[1120px] px-4 pb-10"
+  class="calendar-container pb-10"
   [class.md:hidden]="viewMode() !== 'list'"
 >
-  <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+  <div class="calendar-panel">
     <div class="mb-4 flex items-center justify-between gap-3">
       <h2 class="text-lg font-bold text-slate-950">
         {{ currentMonthLabel() }}
@@ -274,11 +268,11 @@
 </section>
 
 <section
-  class="mx-auto hidden max-w-[1120px] px-4 pb-10 md:block"
+  class="calendar-container hidden pb-10 md:block"
   [class.md:hidden]="viewMode() !== 'calendar'"
 >
-  <div class="grid gap-0.5 rounded-xl border border-slate-200 bg-white p-2 shadow-sm">
-    <div class="grid grid-cols-7 gap-0.5 text-center text-xs font-semibold uppercase tracking-[0.18em] text-slate-600 sm:text-sm">
+  <div class="calendar-month-card">
+    <div class="calendar-weekdays">
       @for (weekday of weekdayNames; track weekday) {
         <div class="py-1">
           {{ weekday }}
@@ -286,16 +280,15 @@
       }
     </div>
 
-    <div class="grid grid-cols-7 gap-0.5 text-center text-sm sm:text-base">
+    <div class="calendar-month-grid">
       @for (day of calendarDays(); track $index) {
         <div
-          class="rounded-md border border-slate-200 bg-white px-1.5 py-2 text-left text-slate-900"
-          [class.bg-slate-50]="!day.day"
-          [class.text-slate-400]="!day.day"
+          class="calendar-day-cell"
+          [class.calendar-day-cell-empty]="!day.day"
         >
           @if (day.day !== null) {
             <div class="flex items-center justify-between gap-1">
-              <span class="text-sm font-semibold">
+              <span class="calendar-day-number">
                 {{ day.day }}
               </span>
             </div>
@@ -350,6 +343,32 @@
     </div>
   </div>
 </section>
+
+@if (!showAdminLogin() || isAdmin()) {
+  <section class="calendar-container pb-10">
+    <div class="calendar-admin-entry">
+      @if (isAdmin()) {
+        <button
+          type="button"
+          (click)="signOutAdmin()"
+          class="calendar-admin-link"
+        >
+          Admin Out
+        </button>
+      } @else {
+        <button
+          type="button"
+          (click)="toggleAdminLogin()"
+          class="calendar-admin-icon"
+          aria-label="Admin"
+          title="Admin"
+        >
+          <ng-icon name="lucidePencil" size="16" strokeWidth="2.4" />
+        </button>
+      }
+    </div>
+  </section>
+}
 
 <!-- Event Detail Tooltip -->
 @if (selectedEvent()) {
@@ -486,4 +505,10 @@
       }
     </tbody>
   </table>
+
+  <footer class="calendar-pdf-footer">
+    <strong>Jefferson County Amateur Radio Club</strong>
+    <span>KB0TLL</span>
+    <span>www.JCARCMo.com</span>
+  </footer>
 </section>
