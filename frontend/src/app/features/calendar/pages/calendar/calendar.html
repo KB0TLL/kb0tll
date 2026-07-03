@@ -33,77 +33,62 @@
 </section>
 
 <section class="mx-auto max-w-[1120px] px-4 pb-6">
-  <form
-    (ngSubmit)="addEvent()"
-    class="grid gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_1fr_auto]"
-  >
-    <div>
-      <label class="mb-1 block text-xs font-bold uppercase tracking-[0.18em] text-slate-600">
-        Date
-      </label>
+  <div class="mb-3 flex items-center justify-between">
+    <h2 class="text-lg font-bold text-slate-900">Add Event</h2>
 
-      <input
-        type="date"
-        name="eventDate"
-        [(ngModel)]="newEvent.date"
-        class="w-full rounded border border-slate-300 px-3 py-2 text-sm"
-        required
-      />
-    </div>
+    <button
+      type="button"
+      (click)="toggleAddForm()"
+      class="inline-flex items-center gap-2 rounded border border-slate-200 bg-white px-3 py-1 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+    >
+      {{ showAddForm() ? 'Hide' : 'Add' }}
+    </button>
+  </div>
 
-    <div>
-      <label class="mb-1 block text-xs font-bold uppercase tracking-[0.18em] text-slate-600">
-        Time
-      </label>
+  @if (showAddForm()) {
+    <form (ngSubmit)="addEvent()" class="space-y-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_1fr_auto]">
+        <div>
+          <label class="mb-1 block text-xs font-bold uppercase tracking-[0.18em] text-slate-600">Date</label>
+          <input type="date" name="eventDate" [(ngModel)]="newEvent.date" class="w-full rounded border border-slate-300 px-3 py-2 text-sm" required />
+        </div>
 
-      <input
-        type="time"
-        name="eventTime"
-        [(ngModel)]="newEvent.time"
-        class="w-full rounded border border-slate-300 px-3 py-2 text-sm"
-      />
-    </div>
+        <div>
+          <label class="mb-1 block text-xs font-bold uppercase tracking-[0.18em] text-slate-600">Time</label>
+          <input type="time" name="eventTime" [(ngModel)]="newEvent.time" class="w-full rounded border border-slate-300 px-3 py-2 text-sm" />
+        </div>
 
-    <div>
-      <label class="mb-1 block text-xs font-bold uppercase tracking-[0.18em] text-slate-600">
-        Category
-      </label>
+        <div>
+          <label class="mb-1 block text-xs font-bold uppercase tracking-[0.18em] text-slate-600">Category</label>
+          <select name="eventType" [(ngModel)]="newEvent.type" class="w-full rounded border border-slate-300 px-3 py-2 text-sm">
+            <option value="meeting">Meeting</option>
+            <option value="net">Net</option>
+            <option value="event">Event</option>
+          </select>
+        </div>
 
-      <select
-        name="eventType"
-        [(ngModel)]="newEvent.type"
-        class="w-full rounded border border-slate-300 px-3 py-2 text-sm"
-      >
-        <option value="meeting">Meeting</option>
-        <option value="net">Net</option>
-        <option value="event">Event</option>
-      </select>
-    </div>
+        <div>
+          <label class="mb-1 block text-xs font-bold uppercase tracking-[0.18em] text-slate-600">Title</label>
+          <input type="text" name="eventTitle" [(ngModel)]="newEvent.title" placeholder="Monday Night Net" class="w-full rounded border border-slate-300 px-3 py-2 text-sm" required />
+        </div>
 
-    <div>
-      <label class="mb-1 block text-xs font-bold uppercase tracking-[0.18em] text-slate-600">
-        Title
-      </label>
+        <div class="flex items-end sm:col-span-2 lg:col-span-1">
+          <button type="submit" class="w-full rounded bg-red-600 px-4 py-2 text-sm font-black uppercase tracking-[0.18em] text-white transition hover:bg-red-700">Add</button>
+        </div>
+      </div>
 
-      <input
-        type="text"
-        name="eventTitle"
-        [(ngModel)]="newEvent.title"
-        placeholder="Monday Night Net"
-        class="w-full rounded border border-slate-300 px-3 py-2 text-sm"
-        required
-      />
-    </div>
+      <div>
+        <label class="mb-1 block text-xs font-bold uppercase tracking-[0.18em] text-slate-600">Notes</label>
+        <textarea name="eventNotes" [(ngModel)]="newEvent.notes" rows="3" placeholder="Add notes" class="w-full resize-y rounded border border-slate-300 px-3 py-2 text-sm"></textarea>
+      </div>
+    </form>
+  }
 
-    <div class="flex items-end sm:col-span-2 lg:col-span-1">
-      <button
-        type="submit"
-        class="w-full rounded bg-red-600 px-4 py-2 text-sm font-black uppercase tracking-[0.18em] text-white transition hover:bg-red-700"
-      >
-        Add
-      </button>
-    </div>
-  </form>
+  @if (calendarError()) {
+    <p class="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-800">
+      {{ calendarError() }}
+    </p>
+  }
 </section>
 
 <section class="mx-auto hidden max-w-[1120px] px-4 pb-6 md:block">
@@ -151,7 +136,7 @@
 
     @if (currentMonthEvents().length === 0) {
       <p class="rounded-lg border border-dashed border-slate-300 p-4 text-sm text-slate-600">
-        No events added for this month.
+        {{ isLoadingEvents() ? 'Loading events...' : 'No events added for this month.' }}
       </p>
     }
 
@@ -218,71 +203,79 @@
   class="mx-auto hidden max-w-[1120px] px-4 pb-10 md:block"
   [class.md:hidden]="viewMode() !== 'calendar'"
 >
-  <div class="grid gap-1 rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
-    <div class="grid grid-cols-7 gap-1 text-center text-xs font-semibold uppercase tracking-[0.18em] text-slate-600 sm:text-sm">
+  <div class="grid gap-0.5 rounded-xl border border-slate-200 bg-white p-2 shadow-sm">
+    <div class="grid grid-cols-7 gap-0.5 text-center text-xs font-semibold uppercase tracking-[0.18em] text-slate-600 sm:text-sm">
       @for (weekday of weekdayNames; track weekday) {
-        <div class="py-2">
+        <div class="py-1">
           {{ weekday }}
         </div>
       }
     </div>
 
-    <div class="grid grid-cols-7 gap-1 text-center text-sm sm:text-base">
+    <div class="grid grid-cols-7 gap-0.5 text-center text-sm sm:text-base">
       @for (day of calendarDays(); track $index) {
         <div
-          class="min-h-[120px] rounded-md border border-slate-200 bg-white p-2 text-left text-slate-900"
+          class="rounded-md border border-slate-200 bg-white px-1.5 py-2 text-left text-slate-900"
           [class.bg-slate-50]="!day.day"
           [class.text-slate-400]="!day.day"
         >
           @if (day.day !== null) {
-            <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center justify-between gap-1">
               <span class="text-sm font-semibold">
                 {{ day.day }}
               </span>
 
               @if (day.events.length > 0) {
-                <span class="rounded-full bg-slate-200 px-2 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-slate-700">
+                <span class="rounded-full bg-slate-200 px-1.5 py-0.5 text-[10px] font-black uppercase tracking-[0.18em] text-slate-700">
                   {{ day.events.length }}
                 </span>
               }
             </div>
 
             @if (day.events.length > 0) {
-              <div class="mt-2 space-y-2">
-                @for (event of day.events; track event.id) {
+              <div class="mt-1.5 space-y-1">
+                @for (event of day.events.slice(0, 2); track event.id) {
                   <div
-                    class="rounded border p-2 text-xs leading-5"
+                    role="button"
+                    tabindex="0"
+                    (click)="selectEvent(event, $event); $event.stopPropagation()"
+                    (keydown.enter)="selectEvent(event, $event)"
+                    (keydown.space)="selectEvent(event, $event); $event.preventDefault()"
+                    class="w-full rounded border px-1.5 py-1 text-xs leading-4 text-left transition hover:shadow-md"
                     [class]="eventTypeClasses(event.type)"
                   >
-                    <div class="flex items-start justify-between gap-2">
-                      <div class="min-w-0">
-                        <div class="mb-1">
+                    <div class="flex items-start justify-between gap-1">
+                      <div class="min-w-0 flex items-start gap-1">
                         <span
-                            class="inline-flex rounded-full px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.18em]"
-                            [class]="eventBadgeClasses(event.type)"
-                        >
-                            {{ eventTypeLabel(event.type) }}
-                        </span>
+                            class="w-2 h-2 rounded-full mt-1 shrink-0"
+                            [class]="eventDotClasses(event.type)"
+                        ></span>
 
-                        <div class="mt-1 font-semibold">
+                        <div class="min-w-0">
+                          <p class="text-xs font-bold break-words">
+                            {{ event.title }}
+                          </p>
+                          <p class="text-[10px] font-medium opacity-75">
                             {{ formatTime(event.time) }}
+                          </p>
                         </div>
-                        </div>
-
-                        <p class="font-bold break-words">
-                        {{ event.title }}
-                        </p>
                       </div>
 
                       <button
                         type="button"
-                        (click)="removeEvent(event.id)"
+                        (click)="removeEvent(event.id); $event.stopPropagation()"
                         class="shrink-0 text-xs font-bold opacity-70 hover:opacity-100"
                         aria-label="Remove event"
                       >
                         ×
                       </button>
                     </div>
+                  </div>
+                }
+                
+                @if (day.events.length > 2) {
+                  <div class="text-[10px] font-semibold text-slate-600 px-1.5 py-0.5">
+                    +{{ day.events.length - 2 }} more
                   </div>
                 }
               </div>
@@ -293,3 +286,60 @@
     </div>
   </div>
 </section>
+
+<!-- Event Detail Tooltip -->
+@if (selectedEvent()) {
+  <div
+    class="fixed z-50 max-w-[280px] rounded-lg border border-slate-200 bg-white p-3 shadow-lg"
+    (click)="$event.stopPropagation()"
+    [style.left.px]="tooltipPosition()?.left"
+    [style.top.px]="tooltipPosition()?.top"
+  >
+    <button
+      type="button"
+      (click)="closeEventDetail()"
+      class="absolute -top-2 -right-2 rounded-full bg-white border border-slate-200 w-6 h-6 flex items-center justify-center text-sm font-bold text-slate-500 hover:text-slate-700 shadow-sm"
+      aria-label="Close"
+    >
+      ×
+    </button>
+
+    <div class="flex items-start gap-2 mb-2">
+      <span
+        class="w-2.5 h-2.5 rounded-full mt-1 shrink-0"
+        [class]="eventDotClasses(selectedEvent()!.type)"
+      ></span>
+      <h3 class="font-bold text-slate-950 text-sm">
+        {{ selectedEvent()!.title }}
+      </h3>
+    </div>
+
+    <div class="space-y-2 text-sm">
+      <div>
+        <p class="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">
+          {{ formatTime(selectedEvent()!.time) }}
+        </p>
+        <span
+          class="inline-flex rounded-full px-1.5 py-0.5 text-[9px] font-black uppercase tracking-[0.1em] mt-1"
+          [class]="eventBadgeClasses(selectedEvent()!.type)"
+        >
+          {{ eventTypeLabel(selectedEvent()!.type) }}
+        </span>
+      </div>
+
+      @if (selectedEvent()!.notes) {
+        <p class="text-slate-700 text-xs whitespace-pre-wrap">
+          {{ selectedEvent()!.notes }}
+        </p>
+      }
+
+      <button
+        type="button"
+        (click)="removeEvent(selectedEvent()!.id); closeEventDetail()"
+        class="w-full rounded bg-red-50 px-2 py-1.5 text-xs font-semibold text-red-700 transition hover:bg-red-100 mt-1"
+      >
+        Remove
+      </button>
+    </div>
+  </div>
+}
