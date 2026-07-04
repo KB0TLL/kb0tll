@@ -587,8 +587,8 @@ export class Calendar implements OnInit {
     );
 
     return {
-      top,
-      left: Math.max(left, viewportPadding),
+      top: top + window.scrollY,
+      left: Math.max(left, viewportPadding) + window.scrollX,
     };
   }
 }
