@@ -21,6 +21,7 @@ export class SiteHeader {
   protected readonly navItems: NavItem[] = [
     { label: 'About', path: '/about' },
     { label: 'Calendar', path: '/calendar' },
+    { label: 'Recap', path: '/recap' },
     { label: 'Leadership', path: '/leadership' },
     { label: 'Photo Gallery', path: '/gallery' },
     { label: 'Member Photos', path: '/member-photos' },

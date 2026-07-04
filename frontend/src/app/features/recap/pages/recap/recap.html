@@ -1,0 +1,260 @@
+<section class="recap-page">
+  <div class="recap-shell">
+    <header class="recap-hero">
+      <div class="recap-hero-copy">
+        <p class="recap-kicker">Club Recap</p>
+        <h1>Updates and notes from KBØTLL</h1>
+        <p>
+          Field reports, meeting highlights, project updates, and community radio moments from around the club.
+        </p>
+      </div>
+
+      @if (isAdmin()) {
+        <div class="recap-admin-actions">
+          <button type="button" class="recap-button recap-button-primary" (click)="openCreateEditor()">
+            <ng-icon name="lucidePlus" size="17" strokeWidth="2.6" />
+            New Post
+          </button>
+
+          <button type="button" class="recap-button recap-button-muted" (click)="signOutAdmin()">
+            Admin Out
+          </button>
+        </div>
+      }
+    </header>
+
+    @if (recapError()) {
+      <p class="recap-alert recap-alert-error">{{ recapError() }}</p>
+    }
+
+    <div class="recap-layout">
+      <aside class="recap-list" aria-label="Recap posts">
+        @if (isLoading()) {
+          <p class="recap-empty">Loading recap posts...</p>
+        } @else if (posts().length === 0) {
+          <p class="recap-empty">No recap posts have been added yet.</p>
+        } @else {
+          @for (post of posts(); track post.id) {
+            <button
+              type="button"
+              class="recap-list-item"
+              [class.recap-list-item-active]="selectedPost()?.id === post.id"
+              (click)="selectPost(post.id)"
+            >
+              <span class="recap-list-date">{{ formatDate(post.published_date) }}</span>
+              <strong>{{ post.title }}</strong>
+
+              @if (post.summary) {
+                <span class="recap-list-summary">{{ post.summary }}</span>
+              }
+
+              @if (post.tags.length > 0) {
+                <span class="recap-tag-row">
+                  @for (tag of post.tags; track tag) {
+                    <span [class]="tagClasses(tag)">{{ tagLabel(tag) }}</span>
+                  }
+                </span>
+              }
+            </button>
+          }
+        }
+      </aside>
+
+      <article class="recap-reader">
+        @if (selectedPost(); as post) {
+          <div class="recap-reader-head">
+            <div>
+              <p class="recap-reader-date">{{ formatDate(post.published_date) }}</p>
+              <h2>{{ post.title }}</h2>
+            </div>
+
+            @if (isAdmin()) {
+              <button type="button" class="recap-button recap-button-muted" (click)="openEditEditor(post)">
+                <ng-icon name="lucideEdit3" size="16" strokeWidth="2.5" />
+                Edit
+              </button>
+            }
+          </div>
+
+          @if (post.tags.length > 0) {
+            <div class="recap-tag-row recap-reader-tags">
+              @for (tag of post.tags; track tag) {
+                <span [class]="tagClasses(tag)">{{ tagLabel(tag) }}</span>
+              }
+            </div>
+          }
+
+          @if (post.summary) {
+            <p class="recap-summary">{{ post.summary }}</p>
+          }
+
+          <div class="recap-body" [innerHTML]="renderBody(post.body)"></div>
+
+          @if (post.links.length > 0) {
+            <div class="recap-links">
+              <h3>Links</h3>
+              @for (link of post.links; track link.url) {
+                <a [href]="link.url" target="_blank" rel="noreferrer">{{ link.label }}</a>
+              }
+            </div>
+          }
+        } @else {
+          <div class="recap-reader-empty">
+            <h2>Recap posts will appear here.</h2>
+            <p>Add the first post from admin mode.</p>
+          </div>
+        }
+      </article>
+    </div>
+
+    @if (!isAdmin()) {
+      <section class="recap-admin-entry" aria-label="Admin access">
+        @if (showAdminLogin()) {
+          <form class="recap-admin-login" (ngSubmit)="unlockAdmin()">
+            <label>
+              <span>Admin Token</span>
+              <input type="password" name="adminToken" [(ngModel)]="adminTokenInput" autocomplete="current-password" />
+            </label>
+
+            <button type="submit" class="recap-button recap-button-primary">Unlock</button>
+            <button type="button" class="recap-button recap-button-muted" (click)="toggleAdminLogin()">Cancel</button>
+          </form>
+        } @else {
+          <button type="button" class="recap-admin-icon" aria-label="Admin" title="Admin" (click)="toggleAdminLogin()">
+            <ng-icon name="lucideEdit3" size="16" strokeWidth="2.5" />
+          </button>
+        }
+
+        @if (adminError()) {
+          <p class="recap-alert recap-alert-warn">{{ adminError() }}</p>
+        }
+      </section>
+    }
+  </div>
+</section>
+
+@if (showEditor()) {
+  <div class="recap-modal-backdrop" (click)="closeEditor()">
+    <section class="recap-modal" aria-label="Recap post editor" (click)="$event.stopPropagation()">
+      <header class="recap-modal-header">
+        <div>
+          <p class="recap-kicker">{{ editor.id ? 'Edit Post' : 'New Post' }}</p>
+          <h2>{{ editor.id ? editor.title || 'Update recap post' : 'Create recap post' }}</h2>
+        </div>
+
+        <button type="button" class="recap-close-button" aria-label="Close editor" (click)="closeEditor()">
+          <ng-icon name="lucideX" size="20" strokeWidth="2.6" />
+        </button>
+      </header>
+
+      <form class="recap-editor" (ngSubmit)="savePost()">
+        <div class="recap-editor-grid">
+          <label>
+            <span>Title</span>
+            <input type="text" name="title" [(ngModel)]="editor.title" required />
+          </label>
+
+          <label>
+            <span>Publish Date</span>
+            <input type="date" name="publishedDate" [(ngModel)]="editor.published_date" required />
+          </label>
+        </div>
+
+        <label>
+          <span>Summary</span>
+          <input type="text" name="summary" [(ngModel)]="editor.summary" maxlength="400" />
+        </label>
+
+        <fieldset class="recap-tag-field">
+          <legend>Tags</legend>
+
+          <div class="recap-tag-picker">
+            @for (option of tagOptions; track option.value) {
+              <button
+                type="button"
+                [class]="tagClasses(option.value)"
+                [class.recap-tag-selected]="hasTag(option.value)"
+                (click)="toggleTag(option.value)"
+              >
+                {{ option.label }}
+              </button>
+            }
+          </div>
+        </fieldset>
+
+        <label>
+          <span>Body</span>
+
+          <div class="recap-format-bar">
+            <button type="button" aria-label="Heading" (click)="insertFormat('## ', '', postBody)">
+              <ng-icon name="lucideHeading2" size="17" strokeWidth="2.6" />
+            </button>
+            <button type="button" aria-label="Bold" (click)="insertFormat('**', '**', postBody)">
+              <ng-icon name="lucideBold" size="17" strokeWidth="2.8" />
+            </button>
+            <button type="button" aria-label="Italic" (click)="insertFormat('*', '*', postBody)">
+              <ng-icon name="lucideItalic" size="17" strokeWidth="2.6" />
+            </button>
+            <button type="button" aria-label="List item" (click)="insertList(postBody)">
+              <ng-icon name="lucideList" size="17" strokeWidth="2.6" />
+            </button>
+            <button type="button" aria-label="Link" (click)="insertLink(postBody)">
+              <ng-icon name="lucideLink" size="17" strokeWidth="2.6" />
+            </button>
+          </div>
+
+          <textarea
+            #postBody
+            name="body"
+            [(ngModel)]="editor.body"
+            rows="10"
+            required
+          ></textarea>
+        </label>
+
+        <section class="recap-link-editor">
+          <div class="recap-link-editor-head">
+            <h3>Links</h3>
+            <button type="button" class="recap-button recap-button-muted" (click)="addLink()">
+              <ng-icon name="lucidePlus" size="15" strokeWidth="2.6" />
+              Add Link
+            </button>
+          </div>
+
+          @for (link of editor.links; track $index; let linkIndex = $index) {
+            <div class="recap-link-row">
+              <input
+                type="text"
+                [name]="'linkLabel' + linkIndex"
+                [(ngModel)]="link.label"
+                placeholder="Label"
+              />
+              <input
+                type="url"
+                [name]="'linkUrl' + linkIndex"
+                [(ngModel)]="link.url"
+                placeholder="https://"
+              />
+              <button type="button" aria-label="Remove link" (click)="removeLink(linkIndex)">
+                <ng-icon name="lucideTrash2" size="16" strokeWidth="2.4" />
+              </button>
+            </div>
+          }
+        </section>
+
+        <footer class="recap-editor-actions">
+          @if (editor.id && selectedPost(); as post) {
+            <button type="button" class="recap-button recap-button-danger" (click)="deletePost(post)">
+              <ng-icon name="lucideTrash2" size="15" strokeWidth="2.6" />
+              Delete
+            </button>
+          }
+
+          <span class="recap-editor-spacer"></span>
+          <button type="button" class="recap-button recap-button-muted" (click)="closeEditor()">Cancel</button>
+          <button type="submit" class="recap-button recap-button-primary">Save Post</button>
+        </footer>
+      </form>
+    </section>
+  </div>
+}

@@ -22,6 +22,12 @@ export const routes: Routes = [
     title: 'Calendar | KB0TLL',
   },
   {
+    path: 'recap',
+    loadComponent: () =>
+      import('./features/recap/pages/recap/recap').then((m) => m.Recap),
+    title: 'Recap | KB0TLL',
+  },
+  {
     path: 'leadership',
     loadComponent: () =>
       import('./features/leadership/pages/leadership/leadership').then(

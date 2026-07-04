@@ -21,6 +21,13 @@ const photoGalleryRoot = '/images/photo_gallery';
 
 const gallerySectionDefinitions: GallerySectionDefinition[] = [
   {
+    title: 'Field Day 2026',
+    files: [
+      'field_day_2026_1.jpeg',
+      'field_day_2026_2.jpeg',
+    ],
+  },
+  {
     title: 'Twin City Days Booth 2025',
     files: [
       '004_twin_city_days_booth_2025_img_6780_scaled.jpg',
