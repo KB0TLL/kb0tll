@@ -1,9 +1,8 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Component, HostListener, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, HostListener, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { lucidePencil } from '@ng-icons/lucide';
+import { lucideChevronLeft, lucideChevronRight, lucidePencil } from '@ng-icons/lucide';
 import { forkJoin } from 'rxjs';
 
 type CalendarEventType = 'meeting' | 'net' | 'event';
@@ -41,13 +40,12 @@ type TooltipPosition = {
   selector: 'app-calendar',
   standalone: true,
   imports: [FormsModule, NgIcon],
-  providers: [provideIcons({ lucidePencil })],
+  providers: [provideIcons({ lucideChevronLeft, lucideChevronRight, lucidePencil })],
   templateUrl: './calendar.html',
   styleUrl: './calendar.scss',
 })
-export class Calendar implements OnInit, OnDestroy {
+export class Calendar implements OnInit {
   private readonly http = inject(HttpClient);
-  private readonly route = inject(ActivatedRoute);
 
   private readonly calendarEventsUrl = '/api/calendar-events';
 
@@ -99,8 +97,6 @@ export class Calendar implements OnInit, OnDestroy {
   protected readonly showAddForm = signal<boolean>(true);
 
   protected readonly showAdminLogin = signal<boolean>(false);
-
-  protected readonly isPrintView = signal<boolean>(false);
 
   protected readonly isLoadingEvents = signal<boolean>(false);
 
@@ -175,13 +171,8 @@ export class Calendar implements OnInit, OnDestroy {
   });
 
   ngOnInit(): void {
-    this.configurePrintView();
     this.loadAdminToken();
     this.loadEvents();
-  }
-
-  ngOnDestroy(): void {
-    document.body.classList.remove('calendar-print-view', 'calendar-printing');
   }
 
   protected previousMonth(): void {
@@ -338,7 +329,7 @@ export class Calendar implements OnInit, OnDestroy {
   protected eventTypeClasses(type: CalendarEventType): string {
     switch (type) {
       case 'meeting':
-        return 'border-red-200 bg-red-50 text-red-900';
+        return 'border-amber-200 bg-amber-50 text-amber-950';
       case 'net':
         return 'border-blue-200 bg-blue-50 text-blue-900';
       case 'event':
@@ -349,7 +340,7 @@ export class Calendar implements OnInit, OnDestroy {
   protected eventBadgeClasses(type: CalendarEventType): string {
     switch (type) {
       case 'meeting':
-        return 'bg-red-600 text-white';
+        return 'bg-amber-500 text-slate-950';
       case 'net':
         return 'bg-blue-600 text-white';
       case 'event':
@@ -360,7 +351,7 @@ export class Calendar implements OnInit, OnDestroy {
   protected eventDotClasses(type: CalendarEventType): string {
     switch (type) {
       case 'meeting':
-        return 'bg-red-600';
+        return 'bg-amber-500';
       case 'net':
         return 'bg-blue-600';
       case 'event':
@@ -481,18 +472,6 @@ export class Calendar implements OnInit, OnDestroy {
   }
 
   protected exportPdf(): void {
-    if (this.shouldOpenPrintPreview()) {
-      const { year, month } = this.displayDate();
-      const printUrl = `/calendar/print?year=${year}&month=${month}`;
-      const printWindow = window.open(printUrl, '_blank', 'noopener,noreferrer');
-
-      if (!printWindow) {
-        window.location.href = printUrl;
-      }
-
-      return;
-    }
-
     this.printableGalleryPhoto.set(this.getRandomPrintableGalleryPhoto());
     this.printCurrentPage();
   }
@@ -514,36 +493,6 @@ export class Calendar implements OnInit, OnDestroy {
     document.body.getBoundingClientRect();
     window.print();
     window.setTimeout(cleanup, 30000);
-  }
-
-  private configurePrintView(): void {
-    if (this.route.snapshot.data['printView'] !== true) {
-      return;
-    }
-
-    const year = Number(this.route.snapshot.queryParamMap.get('year'));
-    const month = Number(this.route.snapshot.queryParamMap.get('month'));
-
-    if (Number.isInteger(year) && Number.isInteger(month) && month >= 0 && month <= 11) {
-      this.displayDate.set({ year, month });
-    }
-
-    this.isPrintView.set(true);
-    this.printableGalleryPhoto.set(this.getRandomPrintableGalleryPhoto());
-    document.body.classList.add('calendar-print-view');
-  }
-
-  private shouldOpenPrintPreview(): boolean {
-    if (this.isPrintView()) {
-      return false;
-    }
-
-    const userAgent = navigator.userAgent;
-
-    return (
-      window.matchMedia('(max-width: 767px), (pointer: coarse)').matches ||
-      /Android|iPhone|iPad|iPod|Mobi/i.test(userAgent)
-    );
   }
 
   private getRandomPrintableGalleryPhoto(): string {

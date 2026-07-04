@@ -72,21 +72,12 @@
   text-transform: uppercase;
 }
 
-.calendar-action-bar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  justify-content: flex-end;
-}
-
 .calendar-button,
 .calendar-mini-button,
 .calendar-tab {
   border-radius: 0.35rem;
   font-size: 0.875rem;
   font-weight: 850;
-  line-height: 1;
-  transition: background-color 160ms ease, color 160ms ease;
 }
 
 .calendar-button {
@@ -215,7 +206,6 @@
 .calendar-admin-link,
 .calendar-admin-icon {
   color: #64748b;
-  font-weight: 800;
 }
 
 .calendar-admin-link {
@@ -234,28 +224,7 @@
   width: 2rem;
 }
 
-.calendar-admin-link:hover,
-.calendar-admin-icon:hover {
-  background: #eef4dc;
-  color: #26310d;
-}
-
-.calendar-pdf {
+.calendar-pdf,
+.calendar-mobile-static {
   display: none;
-}
-
-@media (max-width: 767px) {
-  .calendar-hero-panel {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .calendar-action-bar {
-    justify-content: flex-start;
-  }
-
-  .calendar-hero-logo {
-    height: 4rem;
-    width: 4rem;
-  }
 }

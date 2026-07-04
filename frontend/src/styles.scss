@@ -12,34 +12,108 @@ body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
-.calendar-print-toolbar {
+.calendar-calendar-toolbar {
+  padding-bottom: 0.75rem;
+}
+
+.calendar-calendar-toolbar-inner {
   align-items: center;
-  background: #26310d;
-  border-bottom: 4px solid #7b9b22;
+  background: rgb(255 255 255 / 96%);
+  border: 1px solid #dbe3c7;
+  border-left: 4px solid #7b9b22;
+  box-shadow: 0 10px 24px rgb(15 23 42 / 7%);
   display: flex;
-  gap: 0.75rem;
-  justify-content: center;
-  padding: 0.9rem 1rem;
-  position: sticky;
-  top: 0;
-  z-index: 10;
+  gap: 1rem;
+  justify-content: space-between;
+  padding: 0.5rem;
 }
 
-.calendar-print-back,
-.calendar-print-button {
-  border-radius: 0.35rem;
-  font-size: 0.875rem;
+.calendar-month-nav {
+  align-items: center;
+  border: 1px solid #dbe3c7;
+  display: inline-grid;
+  grid-template-columns: auto minmax(9rem, 1fr) auto;
+}
+
+.calendar-nav-button,
+.calendar-export-control {
+  align-items: center;
+  border-radius: 0.28rem;
+  display: inline-flex;
+  font-size: 0.86rem;
   font-weight: 850;
-  padding: 0.72rem 0.9rem;
+  gap: 0.35rem;
+  justify-content: center;
+  min-height: 2.45rem;
+  padding: 0 0.78rem;
+  transition: background-color 160ms ease, color 160ms ease, transform 160ms ease;
 }
 
-.calendar-print-back {
-  color: white;
+.calendar-nav-button {
+  background: white;
+  color: #26310d;
 }
 
-.calendar-print-button {
+.calendar-nav-button:first-child {
+  border-right: 1px solid #dbe3c7;
+}
+
+.calendar-nav-button:last-child {
+  border-left: 1px solid #dbe3c7;
+}
+
+.calendar-nav-button:hover,
+.calendar-export-control:hover {
+  transform: translateY(-1px);
+}
+
+.calendar-nav-current {
+  color: #26310d;
+  font-size: 0.78rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  padding: 0 0.8rem;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.calendar-export-control {
   background: #7b9b22;
   color: white;
+}
+
+.calendar-mobile-month-nav {
+  position: relative;
+  z-index: 1;
+}
+
+.calendar-admin-mode-pill {
+  background: #eef4dc;
+  border: 1px solid #dbe3c7;
+  border-radius: 999px;
+  color: #536f0d;
+  font-size: 0.72rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  padding: 0.36rem 0.6rem;
+  text-transform: uppercase;
+}
+
+.calendar-loading-strip {
+  background: #f7faef;
+  border: 1px solid #dbe3c7;
+  color: #536f0d;
+  font-size: 0.86rem;
+  font-weight: 850;
+  margin: 0 0 0.75rem;
+  padding: 0.55rem 0.75rem;
+}
+
+.calendar-admin-link:hover,
+.calendar-admin-icon:hover {
+  background: #eef4dc;
+  color: #26310d;
 }
 
 @media print, screen {
@@ -48,14 +122,11 @@ body {
     -webkit-print-color-adjust: exact;
   }
 
-  body.calendar-print-view app-site-header,
-  body.calendar-print-view app-site-footer,
   body.calendar-printing app-site-header,
   body.calendar-printing app-site-footer {
     display: none !important;
   }
 
-  body.calendar-print-view,
   body.calendar-printing {
     background: white;
     margin: 0;
@@ -65,7 +136,6 @@ body {
     display: none !important;
   }
 
-  body.calendar-print-view .calendar-pdf,
   body.calendar-printing .calendar-pdf {
     box-sizing: border-box;
     color: #243042;
@@ -79,7 +149,6 @@ body {
     width: 100%;
   }
 
-  body.calendar-print-view .calendar-pdf::before,
   body.calendar-printing .calendar-pdf::before {
     background: linear-gradient(90deg, #26310d 0%, #7b9b22 48%, #a4141b 100%);
     content: '';
@@ -90,17 +159,12 @@ body {
     top: 0;
   }
 
-  body.calendar-print-view .calendar-pdf::after,
   body.calendar-printing .calendar-pdf::after {
     border: 1px solid #d7dec7;
     content: '';
     inset: 0.18in;
     pointer-events: none;
     position: fixed;
-  }
-
-  body.calendar-printing .calendar-print-toolbar {
-    display: none !important;
   }
 
   .calendar-pdf-header {
@@ -402,40 +466,82 @@ body {
 }
 
 @media screen {
-  body.calendar-print-view {
+  .calendar-pdf,
+  .calendar-mobile-static {
+    box-sizing: border-box;
+    color: #243042;
+    flex-direction: column;
+    font-family: Inter, Arial, Helvetica, sans-serif;
     overflow-x: hidden;
-  }
-
-  body.calendar-print-view .calendar-pdf {
     margin: 0 auto;
     min-height: auto;
-    overflow: hidden;
     padding: 1rem 0.5rem 1.25rem;
+    position: relative;
     width: 100%;
   }
 
-  body.calendar-print-view .calendar-pdf-header,
-  body.calendar-print-view .calendar-pdf-grid,
-  body.calendar-print-view .calendar-pdf-footer {
+  .calendar-pdf-header,
+  .calendar-pdf-grid,
+  .calendar-pdf-footer {
     max-width: 100%;
     width: 100%;
   }
 
-  body.calendar-print-view .calendar-pdf-summary {
+  .calendar-pdf-summary {
     max-width: min(100%, 6.55in);
   }
 }
 
 @media screen and (max-width: 767px) {
-  body.calendar-print-view .calendar-pdf {
+  .calendar-export-button,
+  .calendar-list-section,
+  .calendar-month-section,
+  .calendar-view-switcher {
+    display: none !important;
+  }
+
+  .calendar-admin-entry {
+    margin: 0 0.5rem;
+    padding-top: 0.5rem !important;
+  }
+
+  .calendar-month-nav {
+    display: grid !important;
+    grid-template-columns: 2.75rem minmax(0, 1fr) 2.75rem !important;
+    width: 100%;
+  }
+
+  .calendar-nav-button {
+    min-height: 2.55rem !important;
+    padding: 0 !important;
+  }
+
+  .calendar-nav-text {
+    display: none;
+  }
+
+  .calendar-nav-current {
+    align-items: center;
+    display: flex;
+    font-size: 0.8rem !important;
+    justify-content: center;
+    padding: 0 0.35rem !important;
+  }
+
+  .calendar-mobile-static {
+    display: flex !important;
     gap: 1rem;
   }
 
-  body.calendar-print-view .calendar-pdf::after {
+  .calendar-mobile-static::after {
+    border: 1px solid #d7dec7;
+    content: '';
     inset: 0.5rem;
+    pointer-events: none;
+    position: absolute;
   }
 
-  body.calendar-print-view .calendar-pdf-month {
+  .calendar-pdf-month {
     align-items: flex-start;
     flex-direction: column;
     gap: 0.75rem;
@@ -443,83 +549,83 @@ body {
     padding: 0.8rem;
   }
 
-  body.calendar-print-view .calendar-pdf-brand img {
+  .calendar-pdf-brand img {
     height: 3rem;
     width: 3rem;
   }
 
-  body.calendar-print-view .calendar-pdf-brand p {
+  .calendar-pdf-brand p {
     font-size: 6.5pt;
     max-width: 11rem;
   }
 
-  body.calendar-print-view .calendar-pdf-brand strong {
+  .calendar-pdf-brand strong {
     font-size: 18pt;
   }
 
-  body.calendar-print-view .calendar-pdf-title {
+  .calendar-pdf-title {
     border-right: 0;
     max-width: 100%;
     padding-right: 0;
     text-align: left;
   }
 
-  body.calendar-print-view .calendar-pdf-month h1 {
+  .calendar-pdf-month h1 {
     font-size: 38pt;
   }
 
-  body.calendar-print-view .calendar-pdf-month p,
-  body.calendar-print-view .calendar-pdf-month span {
+  .calendar-pdf-month p,
+  .calendar-pdf-month span {
     font-size: 6.5pt;
     line-height: 1.15;
   }
 
-  body.calendar-print-view .calendar-pdf-summary {
+  .calendar-pdf-summary {
     flex-direction: column;
     gap: 0.75rem;
     margin: 0;
     min-height: 0;
   }
 
-  body.calendar-print-view .calendar-pdf-glance {
+  .calendar-pdf-glance {
     flex: none;
     padding: 0.75rem;
   }
 
-  body.calendar-print-view .calendar-pdf-summary ul {
+  .calendar-pdf-summary ul {
     columns: 1;
   }
 
-  body.calendar-print-view .calendar-pdf-photo {
+  .calendar-pdf-photo {
     margin: 0 auto;
     max-width: 100%;
     width: min(17rem, 100%);
   }
 
-  body.calendar-print-view .calendar-pdf-grid th {
+  .calendar-pdf-grid th {
     font-size: 5.4pt;
     letter-spacing: 0;
     padding: 0.16rem 0.05rem;
   }
 
-  body.calendar-print-view .calendar-pdf-grid td {
+  .calendar-pdf-grid td {
     height: 4.25rem;
     padding: 0.18rem 0.12rem;
   }
 
-  body.calendar-print-view .calendar-pdf-day {
+  .calendar-pdf-day {
     font-size: 6pt;
     height: 0.9rem;
     min-width: 0.9rem;
   }
 
-  body.calendar-print-view .calendar-pdf-event {
+  .calendar-pdf-event {
     font-size: 5pt;
     max-width: 100%;
     padding: 0.08rem;
   }
 
-  body.calendar-print-view .calendar-pdf-footer {
+  .calendar-pdf-footer {
     flex-wrap: wrap;
     gap: 0.35rem;
     line-height: 1.25;
@@ -527,8 +633,14 @@ body {
     padding: 0.45rem;
   }
 
-  body.calendar-print-view .calendar-pdf-footer span {
+  .calendar-pdf-footer span {
     padding-left: 0.35rem;
+  }
+}
+
+@media screen and (max-width: 430px) {
+  .calendar-mobile-static .calendar-pdf-photo {
+    display: none;
   }
 }
 
