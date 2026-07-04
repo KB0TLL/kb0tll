@@ -22,8 +22,10 @@ export class Leadership {
       email: 'mailto:president@jcarcmo.com',
     },
     {
-      name: 'NA',
-      role: 'Vice-President',
+      name: 'Rich - WB0RDS',
+      role: 'Vice President',
+      image: 'images/members/WB0RDS-RICH.jpg',
+      email: 'mailto:president@jcarcmo.com',
     },
     {
       name: 'Jared - KF0OCM',
