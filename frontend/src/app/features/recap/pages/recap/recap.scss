@@ -342,6 +342,10 @@
   margin-bottom: 1rem;
 }
 
+.recap-body :where(p) {
+  white-space: normal;
+}
+
 .recap-body :where(h3) {
   color: #26310d;
   font-size: 1.25rem;

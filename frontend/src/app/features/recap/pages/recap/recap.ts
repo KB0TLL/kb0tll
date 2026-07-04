@@ -132,6 +132,7 @@ export class Recap implements OnInit {
     const lines = body.split(/\r?\n/);
     const html: string[] = [];
     let listItems: string[] = [];
+    let paragraphLines: string[] = [];
 
     const closeList = () => {
       if (listItems.length === 0) {
@@ -142,29 +143,42 @@ export class Recap implements OnInit {
       listItems = [];
     };
 
+    const closeParagraph = () => {
+      if (paragraphLines.length === 0) {
+        return;
+      }
+
+      html.push(`<p>${paragraphLines.map((line) => this.renderInline(line)).join('<br>')}</p>`);
+      paragraphLines = [];
+    };
+
     for (const line of lines) {
       const trimmedLine = line.trim();
 
       if (!trimmedLine) {
+        closeParagraph();
         closeList();
         continue;
       }
 
       if (trimmedLine.startsWith('## ')) {
+        closeParagraph();
         closeList();
         html.push(`<h3>${this.renderInline(trimmedLine.slice(3))}</h3>`);
         continue;
       }
 
       if (trimmedLine.startsWith('- ')) {
+        closeParagraph();
         listItems.push(`<li>${this.renderInline(trimmedLine.slice(2))}</li>`);
         continue;
       }
 
       closeList();
-      html.push(`<p>${this.renderInline(trimmedLine)}</p>`);
+      paragraphLines.push(trimmedLine);
     }
 
+    closeParagraph();
     closeList();
 
     return html.join('');
