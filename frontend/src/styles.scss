@@ -401,6 +401,137 @@ body {
 
 }
 
+@media screen {
+  body.calendar-print-view {
+    overflow-x: hidden;
+  }
+
+  body.calendar-print-view .calendar-pdf {
+    margin: 0 auto;
+    min-height: auto;
+    overflow: hidden;
+    padding: 1rem 0.5rem 1.25rem;
+    width: 100%;
+  }
+
+  body.calendar-print-view .calendar-pdf-header,
+  body.calendar-print-view .calendar-pdf-grid,
+  body.calendar-print-view .calendar-pdf-footer {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  body.calendar-print-view .calendar-pdf-summary {
+    max-width: min(100%, 6.55in);
+  }
+}
+
+@media screen and (max-width: 767px) {
+  body.calendar-print-view .calendar-pdf {
+    gap: 1rem;
+  }
+
+  body.calendar-print-view .calendar-pdf::after {
+    inset: 0.5rem;
+  }
+
+  body.calendar-print-view .calendar-pdf-month {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.75rem;
+    min-height: 0;
+    padding: 0.8rem;
+  }
+
+  body.calendar-print-view .calendar-pdf-brand img {
+    height: 3rem;
+    width: 3rem;
+  }
+
+  body.calendar-print-view .calendar-pdf-brand p {
+    font-size: 6.5pt;
+    max-width: 11rem;
+  }
+
+  body.calendar-print-view .calendar-pdf-brand strong {
+    font-size: 18pt;
+  }
+
+  body.calendar-print-view .calendar-pdf-title {
+    border-right: 0;
+    max-width: 100%;
+    padding-right: 0;
+    text-align: left;
+  }
+
+  body.calendar-print-view .calendar-pdf-month h1 {
+    font-size: 38pt;
+  }
+
+  body.calendar-print-view .calendar-pdf-month p,
+  body.calendar-print-view .calendar-pdf-month span {
+    font-size: 6.5pt;
+    line-height: 1.15;
+  }
+
+  body.calendar-print-view .calendar-pdf-summary {
+    flex-direction: column;
+    gap: 0.75rem;
+    margin: 0;
+    min-height: 0;
+  }
+
+  body.calendar-print-view .calendar-pdf-glance {
+    flex: none;
+    padding: 0.75rem;
+  }
+
+  body.calendar-print-view .calendar-pdf-summary ul {
+    columns: 1;
+  }
+
+  body.calendar-print-view .calendar-pdf-photo {
+    margin: 0 auto;
+    max-width: 100%;
+    width: min(17rem, 100%);
+  }
+
+  body.calendar-print-view .calendar-pdf-grid th {
+    font-size: 5.4pt;
+    letter-spacing: 0;
+    padding: 0.16rem 0.05rem;
+  }
+
+  body.calendar-print-view .calendar-pdf-grid td {
+    height: 4.25rem;
+    padding: 0.18rem 0.12rem;
+  }
+
+  body.calendar-print-view .calendar-pdf-day {
+    font-size: 6pt;
+    height: 0.9rem;
+    min-width: 0.9rem;
+  }
+
+  body.calendar-print-view .calendar-pdf-event {
+    font-size: 5pt;
+    max-width: 100%;
+    padding: 0.08rem;
+  }
+
+  body.calendar-print-view .calendar-pdf-footer {
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    line-height: 1.25;
+    min-height: 0;
+    padding: 0.45rem;
+  }
+
+  body.calendar-print-view .calendar-pdf-footer span {
+    padding-left: 0.35rem;
+  }
+}
+
 @page {
   margin: 0;
   size: letter portrait;

@@ -481,7 +481,7 @@ export class Calendar implements OnInit, OnDestroy {
   }
 
   protected exportPdf(): void {
-    if (!this.isPrintView()) {
+    if (this.shouldOpenPrintPreview()) {
       const { year, month } = this.displayDate();
       const printUrl = `/calendar/print?year=${year}&month=${month}`;
       const printWindow = window.open(printUrl, '_blank', 'noopener,noreferrer');
@@ -493,6 +493,7 @@ export class Calendar implements OnInit, OnDestroy {
       return;
     }
 
+    this.printableGalleryPhoto.set(this.getRandomPrintableGalleryPhoto());
     this.printCurrentPage();
   }
 
@@ -530,6 +531,19 @@ export class Calendar implements OnInit, OnDestroy {
     this.isPrintView.set(true);
     this.printableGalleryPhoto.set(this.getRandomPrintableGalleryPhoto());
     document.body.classList.add('calendar-print-view');
+  }
+
+  private shouldOpenPrintPreview(): boolean {
+    if (this.isPrintView()) {
+      return false;
+    }
+
+    const userAgent = navigator.userAgent;
+
+    return (
+      window.matchMedia('(max-width: 767px), (pointer: coarse)').matches ||
+      /Android|iPhone|iPad|iPod|Mobi/i.test(userAgent)
+    );
   }
 
   private getRandomPrintableGalleryPhoto(): string {
