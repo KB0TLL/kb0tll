@@ -523,9 +523,14 @@
     grid-template-columns: 1fr;
   }
 
+  .recap-reader {
+    order: 1;
+  }
+
   .recap-list {
     border-right: 0;
     max-height: none;
+    order: 2;
   }
 
   .recap-list-item {

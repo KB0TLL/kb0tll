@@ -1,5 +1,5 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
@@ -63,6 +63,8 @@ type RecapPostForm = {
   styleUrl: './recap.scss',
 })
 export class Recap implements OnInit {
+  @ViewChild('readerPanel') private readerPanel?: ElementRef<HTMLElement>;
+
   private readonly http = inject(HttpClient);
   private readonly recapPostsUrl = '/api/recap-posts';
   private readonly adminTokenStorageKey = 'kb0tll-calendar-admin-token';
@@ -101,6 +103,7 @@ export class Recap implements OnInit {
 
   protected selectPost(postId: number): void {
     this.selectedPostId.set(postId);
+    this.scrollReaderIntoViewOnMobile();
   }
 
   protected formatDate(dateKey: string): string {
@@ -429,6 +432,19 @@ export class Recap implements OnInit {
   private getAdminHeaders(): HttpHeaders {
     return new HttpHeaders({
       'X-Admin-Token': this.adminToken(),
+    });
+  }
+
+  private scrollReaderIntoViewOnMobile(): void {
+    if (!window.matchMedia('(max-width: 860px)').matches) {
+      return;
+    }
+
+    window.setTimeout(() => {
+      this.readerPanel?.nativeElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
     });
   }
 }
