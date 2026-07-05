@@ -741,6 +741,11 @@
   }
 
   .recap-editor-actions {
+    background: white;
     flex-wrap: wrap;
+    margin: 0 -1rem -1rem;
+    padding: 0.75rem 1rem 1rem;
+    position: sticky;
+    bottom: -1rem;
   }
 }

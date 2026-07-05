@@ -350,8 +350,8 @@
         </section>
 
         <footer class="recap-editor-actions">
-          @if (editor.id && selectedPost(); as post) {
-            <button type="button" class="recap-button recap-button-danger" (click)="deletePost(post)">
+          @if (editor.id) {
+            <button type="button" class="recap-button recap-button-danger" (click)="deleteEditedPost()">
               <ng-icon name="lucideTrash2" size="15" strokeWidth="2.6" />
               Delete
             </button>
@@ -359,7 +359,7 @@
 
           <span class="recap-editor-spacer"></span>
           <button type="button" class="recap-button recap-button-muted" (click)="closeEditor()">Cancel</button>
-          <button type="submit" class="recap-button recap-button-primary">Save Post</button>
+          <button type="button" class="recap-button recap-button-primary" (click)="savePost()">Save Post</button>
         </footer>
       </form>
     </section>

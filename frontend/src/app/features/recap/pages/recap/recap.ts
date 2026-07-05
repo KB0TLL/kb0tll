@@ -449,6 +449,21 @@ export class Recap implements OnInit {
     });
   }
 
+  protected deleteEditedPost(): void {
+    if (!this.editor.id) {
+      return;
+    }
+
+    const post = this.posts().find((existingPost) => existingPost.id === this.editor.id);
+
+    if (!post) {
+      this.adminError.set('Could not find the post to delete.');
+      return;
+    }
+
+    this.deletePost(post);
+  }
+
   private loadPosts(): void {
     this.isLoading.set(true);
 
