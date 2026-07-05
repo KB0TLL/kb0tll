@@ -132,6 +132,11 @@
   color: #991b1b;
 }
 
+.recap-button-danger-confirm {
+  background: #b91c1c;
+  color: white;
+}
+
 .recap-admin-icon,
 .recap-close-button {
   background: white;
@@ -164,13 +169,15 @@
 }
 
 .recap-admin-login label,
-.recap-editor label {
+.recap-editor label,
+.recap-editor-field {
   display: grid;
   gap: 0.35rem;
 }
 
 .recap-admin-login span,
 .recap-editor span,
+.recap-editor-field > span,
 .recap-tag-field legend {
   color: #475569;
   font-size: 0.72rem;

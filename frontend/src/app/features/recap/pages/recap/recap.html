@@ -268,7 +268,7 @@
           </div>
         </fieldset>
 
-          <label>
+          <div class="recap-editor-field">
             <span>Body</span>
 
           <div class="recap-editor-tabs">
@@ -317,7 +317,7 @@
           } @else {
             <div class="recap-editor-preview recap-body" [innerHTML]="renderBody(editor.body || 'Nothing to preview yet.')"></div>
           }
-        </label>
+        </div>
 
         <section class="recap-link-editor">
           <div class="recap-link-editor-head">
@@ -349,17 +349,33 @@
           }
         </section>
 
+        @if (adminError()) {
+          <p class="recap-alert recap-alert-warn">{{ adminError() }}</p>
+        }
+
         <footer class="recap-editor-actions">
           @if (editor.id) {
-            <button type="button" class="recap-button recap-button-danger" (click)="deleteEditedPost()">
+            <button
+              type="button"
+              class="recap-button recap-button-danger"
+              [class.recap-button-danger-confirm]="isConfirmingDelete(editor.id)"
+              (click)="deleteEditedPost()"
+            >
               <ng-icon name="lucideTrash2" size="15" strokeWidth="2.6" />
-              Delete
+              {{ isConfirmingDelete(editor.id) ? 'Confirm Delete' : 'Delete' }}
             </button>
           }
 
           <span class="recap-editor-spacer"></span>
           <button type="button" class="recap-button recap-button-muted" (click)="closeEditor()">Cancel</button>
-          <button type="button" class="recap-button recap-button-primary" (click)="savePost()">Save Post</button>
+          <button
+            type="button"
+            class="recap-button recap-button-primary"
+            (pointerup)="savePost(); $event.preventDefault()"
+            (keydown.enter)="savePost()"
+          >
+            Save Post
+          </button>
         </footer>
       </form>
     </section>

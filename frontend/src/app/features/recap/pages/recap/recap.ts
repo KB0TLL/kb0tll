@@ -81,6 +81,7 @@ export class Recap implements OnInit {
   protected readonly showEditor = signal(false);
   protected readonly activeFilter = signal<RecapFilter>('all');
   protected readonly editorMode = signal<EditorMode>('write');
+  protected readonly pendingDeletePostId = signal<number | null>(null);
 
   protected adminTokenInput = '';
 
@@ -298,6 +299,7 @@ export class Recap implements OnInit {
   protected openCreateEditor(): void {
     this.editor = this.createEmptyEditor();
     this.editorMode.set('write');
+    this.pendingDeletePostId.set(null);
     this.showEditor.set(true);
     this.adminError.set(null);
   }
@@ -313,6 +315,7 @@ export class Recap implements OnInit {
       published_date: post.published_date,
     };
     this.editorMode.set('write');
+    this.pendingDeletePostId.set(null);
     this.showEditor.set(true);
     this.adminError.set(null);
   }
@@ -328,6 +331,7 @@ export class Recap implements OnInit {
       published_date: this.toDateKey(new Date()),
     };
     this.editorMode.set('write');
+    this.pendingDeletePostId.set(null);
     this.showEditor.set(true);
     this.adminError.set(null);
   }
@@ -335,6 +339,7 @@ export class Recap implements OnInit {
   protected closeEditor(): void {
     this.showEditor.set(false);
     this.editorMode.set('write');
+    this.pendingDeletePostId.set(null);
     this.adminError.set(null);
   }
 
@@ -429,9 +434,8 @@ export class Recap implements OnInit {
   }
 
   protected deletePost(post: RecapPost): void {
-    const confirmed = window.confirm(`Delete "${post.title}"?`);
-
-    if (!confirmed) {
+    if (this.pendingDeletePostId() !== post.id) {
+      this.pendingDeletePostId.set(post.id);
       return;
     }
 
@@ -442,11 +446,17 @@ export class Recap implements OnInit {
         this.posts.update((posts) => posts.filter((existingPost) => existingPost.id !== post.id));
         this.selectedPostId.set(this.filteredPosts()[0]?.id ?? null);
         this.showEditor.set(false);
+        this.pendingDeletePostId.set(null);
       },
       error: () => {
         this.adminError.set('Could not remove the post. Check your admin token and try again.');
+        this.pendingDeletePostId.set(null);
       },
     });
+  }
+
+  protected isConfirmingDelete(postId: number): boolean {
+    return this.pendingDeletePostId() === postId;
   }
 
   protected deleteEditedPost(): void {
