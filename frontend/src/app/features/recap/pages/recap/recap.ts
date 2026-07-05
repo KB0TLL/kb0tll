@@ -90,8 +90,13 @@ export class Recap implements OnInit {
 
   protected readonly selectedPost = computed(() => {
     const posts = this.posts();
+    const selectedPostId = this.selectedPostId();
 
-    return posts.find((post) => post.id === this.selectedPostId()) ?? posts[0] ?? null;
+    if (selectedPostId === null) {
+      return null;
+    }
+
+    return posts.find((post) => post.id === selectedPostId) ?? posts[0] ?? null;
   });
 
   ngOnInit(): void {
@@ -100,6 +105,11 @@ export class Recap implements OnInit {
   }
 
   protected selectPost(postId: number): void {
+    if (this.selectedPostId() === postId && window.matchMedia('(max-width: 860px)').matches) {
+      this.selectedPostId.set(null);
+      return;
+    }
+
     this.selectedPostId.set(postId);
   }
 
