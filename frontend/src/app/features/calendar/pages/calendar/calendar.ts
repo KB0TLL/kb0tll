@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, HostListener, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { lucideChevronLeft, lucideChevronRight, lucidePencil } from '@ng-icons/lucide';
+import { lucideChevronLeft, lucideChevronRight, lucidePencil, lucidePlus, lucideX } from '@ng-icons/lucide';
 import { forkJoin } from 'rxjs';
 
 type CalendarEventType = 'meeting' | 'net' | 'event';
@@ -40,7 +40,7 @@ type TooltipPosition = {
   selector: 'app-calendar',
   standalone: true,
   imports: [FormsModule, NgIcon],
-  providers: [provideIcons({ lucideChevronLeft, lucideChevronRight, lucidePencil })],
+  providers: [provideIcons({ lucideChevronLeft, lucideChevronRight, lucidePencil, lucidePlus, lucideX })],
   templateUrl: './calendar.html',
   styleUrl: './calendar.scss',
 })
@@ -94,7 +94,7 @@ export class Calendar implements OnInit {
 
   protected readonly tooltipPosition = signal<TooltipPosition | null>(null);
 
-  protected readonly showAddForm = signal<boolean>(true);
+  protected readonly showAddForm = signal<boolean>(false);
 
   protected readonly showAdminLogin = signal<boolean>(false);
 
@@ -242,6 +242,7 @@ export class Calendar implements OnInit {
         };
         this.calendarError.set(null);
         this.adminError.set(null);
+        this.showAddForm.set(false);
       },
       error: () => {
         this.calendarError.set('Could not save the event or recurring events. Please try again.');
@@ -441,6 +442,16 @@ export class Calendar implements OnInit {
 
   protected toggleAddForm(): void {
     this.showAddForm.set(!this.showAddForm());
+  }
+
+  protected openAddForm(): void {
+    this.showAddForm.set(true);
+    this.adminError.set(null);
+  }
+
+  protected closeAddForm(): void {
+    this.showAddForm.set(false);
+    this.adminError.set(null);
   }
 
   protected toggleAdminLogin(): void {

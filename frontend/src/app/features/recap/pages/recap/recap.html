@@ -29,13 +29,58 @@
 
     <div class="recap-layout">
       <aside class="recap-list" aria-label="Recap posts">
+        <header class="recap-list-header">
+          <div>
+            <p>{{ posts().length }} {{ posts().length === 1 ? 'update' : 'updates' }}</p>
+            @if (latestPost(); as post) {
+              <span>Latest: {{ formatDate(post.published_date) }}</span>
+            } @else {
+              <span>Waiting for the first recap</span>
+            }
+          </div>
+
+          <div class="recap-filter-bar" aria-label="Filter recap posts">
+            @for (filter of filterOptions; track filter.value) {
+              <button
+                type="button"
+                class="recap-filter-button"
+                [class.recap-filter-button-active]="activeFilter() === filter.value"
+                (click)="setFilter(filter.value)"
+              >
+                {{ filter.label }}
+                <span>{{ filterCount(filter.value) }}</span>
+              </button>
+            }
+          </div>
+        </header>
+
         @if (isLoading()) {
-          <p class="recap-empty">Loading recap posts...</p>
-        } @else if (posts().length === 0) {
-          <p class="recap-empty">No recap posts have been added yet.</p>
+          <div class="recap-skeleton-list" aria-label="Loading recap posts">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        } @else if (filteredPosts().length === 0) {
+          <div class="recap-empty">
+            @if (posts().length === 0) {
+              <p>No recap posts have been added yet.</p>
+
+              @if (isAdmin()) {
+                <button type="button" class="recap-button recap-button-primary" (click)="openCreateEditor()">
+                  <ng-icon name="lucidePlus" size="16" strokeWidth="2.6" />
+                  Create First Recap
+                </button>
+              }
+            } @else {
+              <p>No {{ filterLabel().toLowerCase() }} recaps found.</p>
+            }
+          </div>
         } @else {
-          @for (post of posts(); track post.id) {
-            <article class="recap-list-item-wrap">
+          @for (post of filteredPosts(); track post.id) {
+            <article
+              class="recap-list-item-wrap"
+              [class.recap-list-item-wrap-active]="selectedPost()?.id === post.id"
+            >
               <button
                 type="button"
                 class="recap-list-item"
@@ -56,6 +101,13 @@
                     }
                   </span>
                 }
+
+                <ng-icon
+                  class="recap-accordion-icon"
+                  name="lucideChevronDown"
+                  size="18"
+                  strokeWidth="2.5"
+                />
               </button>
 
               @if (selectedPost()?.id === post.id) {
@@ -93,12 +145,22 @@
             </div>
 
             @if (isAdmin()) {
-              <button type="button" class="recap-button recap-button-muted" (click)="openEditEditor(post)">
-                <ng-icon name="lucideEdit3" size="16" strokeWidth="2.5" />
-                Edit
-              </button>
+              <div class="recap-reader-actions">
+                <button type="button" class="recap-button recap-button-muted" (click)="duplicatePost(post)">
+                  <ng-icon name="lucidePlus" size="16" strokeWidth="2.5" />
+                  Duplicate
+                </button>
+                <button type="button" class="recap-button recap-button-muted" (click)="openEditEditor(post)">
+                  <ng-icon name="lucideEdit3" size="16" strokeWidth="2.5" />
+                  Edit
+                </button>
+              </div>
             }
           </div>
+
+          @if (isAdmin()) {
+            <p class="recap-admin-meta">Updated {{ formatDate(post.updated_at.slice(0, 10)) }}</p>
+          }
 
           @if (post.tags.length > 0) {
             <div class="recap-tag-row recap-reader-tags">
@@ -206,34 +268,55 @@
           </div>
         </fieldset>
 
-        <label>
-          <span>Body</span>
+          <label>
+            <span>Body</span>
 
-          <div class="recap-format-bar">
-            <button type="button" aria-label="Heading" (click)="insertFormat('## ', '', postBody)">
-              <ng-icon name="lucideHeading2" size="17" strokeWidth="2.6" />
+          <div class="recap-editor-tabs">
+            <button
+              type="button"
+              [class.recap-editor-tab-active]="editorMode() === 'write'"
+              (click)="setEditorMode('write')"
+            >
+              Write
             </button>
-            <button type="button" aria-label="Bold" (click)="insertFormat('**', '**', postBody)">
-              <ng-icon name="lucideBold" size="17" strokeWidth="2.8" />
-            </button>
-            <button type="button" aria-label="Italic" (click)="insertFormat('*', '*', postBody)">
-              <ng-icon name="lucideItalic" size="17" strokeWidth="2.6" />
-            </button>
-            <button type="button" aria-label="List item" (click)="insertList(postBody)">
-              <ng-icon name="lucideList" size="17" strokeWidth="2.6" />
-            </button>
-            <button type="button" aria-label="Link" (click)="insertLink(postBody)">
-              <ng-icon name="lucideLink" size="17" strokeWidth="2.6" />
+            <button
+              type="button"
+              [class.recap-editor-tab-active]="editorMode() === 'preview'"
+              (click)="setEditorMode('preview')"
+            >
+              Preview
             </button>
           </div>
 
-          <textarea
-            #postBody
-            name="body"
-            [(ngModel)]="editor.body"
-            rows="10"
-            required
-          ></textarea>
+          @if (editorMode() === 'write') {
+            <div class="recap-format-bar">
+              <button type="button" aria-label="Heading" (click)="insertFormat('## ', '', postBody)">
+                <ng-icon name="lucideHeading2" size="17" strokeWidth="2.6" />
+              </button>
+              <button type="button" aria-label="Bold" (click)="insertFormat('**', '**', postBody)">
+                <ng-icon name="lucideBold" size="17" strokeWidth="2.8" />
+              </button>
+              <button type="button" aria-label="Italic" (click)="insertFormat('*', '*', postBody)">
+                <ng-icon name="lucideItalic" size="17" strokeWidth="2.6" />
+              </button>
+              <button type="button" aria-label="List item" (click)="insertList(postBody)">
+                <ng-icon name="lucideList" size="17" strokeWidth="2.6" />
+              </button>
+              <button type="button" aria-label="Link" (click)="insertLink(postBody)">
+                <ng-icon name="lucideLink" size="17" strokeWidth="2.6" />
+              </button>
+            </div>
+
+            <textarea
+              #postBody
+              name="body"
+              [(ngModel)]="editor.body"
+              rows="10"
+              required
+            ></textarea>
+          } @else {
+            <div class="recap-editor-preview recap-body" [innerHTML]="renderBody(editor.body || 'Nothing to preview yet.')"></div>
+          }
         </label>
 
         <section class="recap-link-editor">

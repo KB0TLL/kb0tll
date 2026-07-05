@@ -16,131 +16,44 @@
         </div>
       </div>
 
+      @if (isAdmin()) {
+        <div class="calendar-hero-admin-actions">
+          <button
+            type="button"
+            (click)="openAddForm()"
+            class="calendar-button calendar-button-primary"
+          >
+            <ng-icon name="lucidePlus" size="17" strokeWidth="2.6" />
+            New Event
+          </button>
+
+          <button
+            type="button"
+            (click)="signOutAdmin()"
+            class="calendar-button calendar-button-light"
+          >
+            Admin Out
+          </button>
+        </div>
+      }
+
     </div>
   </div>
 </section>
 
-@if (isAdmin() || showAdminLogin() || adminError() || calendarError()) {
+@if (calendarError() || (isLoadingEvents() && !calendarError())) {
 <section class="calendar-container pt-6 pb-6">
-  <div class="calendar-panel">
-  @if (isAdmin() || showAdminLogin()) {
-    <div class="mb-3 flex items-center justify-between">
-      <h2 class="calendar-section-title">
-        {{ isAdmin() ? 'Add Event' : 'Admin Access' }}
-      </h2>
-
-      @if (isAdmin()) {
-        <div class="flex items-center gap-2">
-          <span class="calendar-admin-mode-pill">Admin mode</span>
-
-          <button
-            type="button"
-            (click)="toggleAddForm()"
-            class="calendar-mini-button"
-          >
-            {{ showAddForm() ? 'Hide' : 'Add' }}
-          </button>
-        </div>
-      } @else {
-        <button
-          type="button"
-          (click)="toggleAdminLogin()"
-          class="calendar-mini-button calendar-mini-button-muted"
-        >
-          Cancel
-        </button>
-      }
-    </div>
-    }
-
-  @if (!isAdmin() && showAdminLogin()) {
-    <form (ngSubmit)="unlockAdmin()" class="mb-4 flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:flex-row sm:items-end">
-      <div class="flex-1">
-        <label class="mb-1 block text-xs font-bold uppercase tracking-[0.18em] text-slate-600">Admin Token</label>
-        <input
-          type="password"
-          name="adminToken"
-          [(ngModel)]="adminTokenInput"
-          class="w-full rounded border border-slate-300 px-3 py-2 text-sm"
-          autocomplete="current-password"
-        />
-      </div>
-
-      <button type="submit" class="rounded bg-red-600 px-4 py-2 text-sm font-black uppercase tracking-[0.18em] text-white transition hover:bg-red-700">
-        Unlock
-      </button>
-    </form>
-  }
-
-  @if (isAdmin() && showAddForm()) {
-    <form (ngSubmit)="addEvent()" class="space-y-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-      <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_1fr_auto]">
-        <div>
-          <label class="mb-1 block text-xs font-bold uppercase tracking-[0.18em] text-slate-600">Date</label>
-          <input type="date" name="eventDate" [(ngModel)]="newEvent.date" class="w-full rounded border border-slate-300 px-3 py-2 text-sm" required />
-        </div>
-
-        <div>
-          <label class="mb-1 block text-xs font-bold uppercase tracking-[0.18em] text-slate-600">Time</label>
-          <input type="time" name="eventTime" [(ngModel)]="newEvent.time" class="w-full rounded border border-slate-300 px-3 py-2 text-sm" />
-        </div>
-
-        <div>
-          <label class="mb-1 block text-xs font-bold uppercase tracking-[0.18em] text-slate-600">Category</label>
-          <select name="eventType" [(ngModel)]="newEvent.type" class="w-full rounded border border-slate-300 px-3 py-2 text-sm">
-            <option value="meeting">Meeting</option>
-            <option value="net">Net</option>
-            <option value="event">Event</option>
-          </select>
-        </div>
-
-        <div>
-          <label class="mb-1 block text-xs font-bold uppercase tracking-[0.18em] text-slate-600">Title</label>
-          <input type="text" name="eventTitle" [(ngModel)]="newEvent.title" placeholder="Monday Night Net" class="w-full rounded border border-slate-300 px-3 py-2 text-sm" required />
-        </div>
-
-        <div class="flex items-end sm:col-span-2 lg:col-span-1">
-          <button type="submit" class="w-full rounded bg-red-600 px-4 py-2 text-sm font-black uppercase tracking-[0.18em] text-white transition hover:bg-red-700">Add</button>
-        </div>
-      </div>
-
-      <div>
-        <label class="mb-1 block text-xs font-bold uppercase tracking-[0.18em] text-slate-600">Notes</label>
-        <textarea name="eventNotes" [(ngModel)]="newEvent.notes" rows="3" placeholder="Add notes" class="w-full resize-y rounded border border-slate-300 px-3 py-2 text-sm"></textarea>
-      </div>
-
-      <label class="flex items-start gap-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-700">
-        <input
-          type="checkbox"
-          name="eventRecurringWeekly"
-          [(ngModel)]="newEvent.recurringWeekly"
-          class="mt-1"
-        />
-        <span>
-          Repeat weekly through the selected month
-        </span>
-      </label>
-    </form>
-  }
-
-  @if (adminError()) {
-    <p class="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-semibold text-amber-900">
-      {{ adminError() }}
-    </p>
-  }
-
   @if (calendarError()) {
-    <p class="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-800">
+    <p class="calendar-alert calendar-alert-error">
       {{ calendarError() }}
     </p>
   }
 
   @if (isLoadingEvents() && !calendarError()) {
-    <p class="mt-3 rounded-lg border border-lime-200 bg-lime-50 px-3 py-2 text-sm font-semibold text-lime-950">
+    <p class="calendar-alert calendar-alert-loading">
       Loading calendar...
     </p>
   }
-  </div>
 </section>
 }
 
@@ -460,17 +373,29 @@
   </footer>
 </section>
 
-@if (!showAdminLogin() || isAdmin()) {
+@if (!isAdmin()) {
   <section class="calendar-container pb-10">
     <div class="calendar-admin-entry">
-      @if (isAdmin()) {
-        <button
-          type="button"
-          (click)="signOutAdmin()"
-          class="calendar-admin-link"
-        >
-          Admin Out
-        </button>
+      @if (showAdminLogin()) {
+        <form class="calendar-admin-login" (ngSubmit)="unlockAdmin()">
+          <label>
+            <span>Admin Token</span>
+            <input
+              type="password"
+              name="adminToken"
+              [(ngModel)]="adminTokenInput"
+              autocomplete="current-password"
+            />
+          </label>
+
+          <button type="submit" class="calendar-button calendar-button-primary">
+            Unlock
+          </button>
+
+          <button type="button" class="calendar-button calendar-button-light" (click)="toggleAdminLogin()">
+            Cancel
+          </button>
+        </form>
       } @else {
         <button
           type="button"
@@ -482,8 +407,88 @@
           <ng-icon name="lucidePencil" size="16" strokeWidth="2.4" />
         </button>
       }
+
+      @if (adminError()) {
+        <p class="calendar-alert calendar-alert-warn">
+          {{ adminError() }}
+        </p>
+      }
     </div>
   </section>
+}
+
+@if (isAdmin() && showAddForm()) {
+  <div class="calendar-modal-backdrop" (click)="closeAddForm()">
+    <section class="calendar-modal" aria-label="Add calendar event" (click)="$event.stopPropagation()">
+      <header class="calendar-modal-header">
+        <div>
+          <p class="calendar-section-title">New Event</p>
+          <h2>Add Calendar Item</h2>
+        </div>
+
+        <button type="button" class="calendar-close-button" aria-label="Close add event form" (click)="closeAddForm()">
+          <ng-icon name="lucideX" size="20" strokeWidth="2.6" />
+        </button>
+      </header>
+
+      <form (ngSubmit)="addEvent()" class="calendar-event-form">
+        <div class="calendar-event-form-grid">
+          <label>
+            <span>Date</span>
+            <input type="date" name="eventDate" [(ngModel)]="newEvent.date" required />
+          </label>
+
+          <label>
+            <span>Time</span>
+            <input type="time" name="eventTime" [(ngModel)]="newEvent.time" />
+          </label>
+
+          <label>
+            <span>Category</span>
+            <select name="eventType" [(ngModel)]="newEvent.type">
+              <option value="meeting">Meeting</option>
+              <option value="net">Net</option>
+              <option value="event">Event</option>
+            </select>
+          </label>
+
+          <label>
+            <span>Title</span>
+            <input type="text" name="eventTitle" [(ngModel)]="newEvent.title" placeholder="Monday Night Net" required />
+          </label>
+        </div>
+
+        <label>
+          <span>Notes</span>
+          <textarea name="eventNotes" [(ngModel)]="newEvent.notes" rows="4" placeholder="Add notes"></textarea>
+        </label>
+
+        <label class="calendar-checkbox-row">
+          <input
+            type="checkbox"
+            name="eventRecurringWeekly"
+            [(ngModel)]="newEvent.recurringWeekly"
+          />
+          <span>Repeat weekly through the selected month</span>
+        </label>
+
+        @if (adminError()) {
+          <p class="calendar-alert calendar-alert-warn">
+            {{ adminError() }}
+          </p>
+        }
+
+        <footer class="calendar-modal-actions">
+          <button type="button" class="calendar-button calendar-button-light" (click)="closeAddForm()">
+            Cancel
+          </button>
+          <button type="submit" class="calendar-button calendar-button-primary">
+            Save Event
+          </button>
+        </footer>
+      </form>
+    </section>
+  </div>
 }
 
 <!-- Event Detail Tooltip -->

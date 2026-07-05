@@ -1,9 +1,10 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, HostListener, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   lucideBold,
+  lucideChevronDown,
   lucideEdit3,
   lucideHeading2,
   lucideItalic,
@@ -15,6 +16,8 @@ import {
 } from '@ng-icons/lucide';
 
 type RecapTag = 'meeting' | 'net' | 'event';
+type RecapFilter = RecapTag | 'all';
+type EditorMode = 'write' | 'preview';
 
 type RecapLink = {
   label: string;
@@ -49,6 +52,7 @@ type RecapPostForm = {
   providers: [
     provideIcons({
       lucideBold,
+      lucideChevronDown,
       lucideEdit3,
       lucideHeading2,
       lucideItalic,
@@ -75,6 +79,8 @@ export class Recap implements OnInit {
   protected readonly adminToken = signal('');
   protected readonly showAdminLogin = signal(false);
   protected readonly showEditor = signal(false);
+  protected readonly activeFilter = signal<RecapFilter>('all');
+  protected readonly editorMode = signal<EditorMode>('write');
 
   protected adminTokenInput = '';
 
@@ -83,13 +89,29 @@ export class Recap implements OnInit {
     { value: 'net', label: 'Net' },
     { value: 'event', label: 'Event' },
   ];
+  protected readonly filterOptions: { value: RecapFilter; label: string }[] = [
+    { value: 'all', label: 'All' },
+    ...this.tagOptions,
+  ];
 
   protected editor: RecapPostForm = this.createEmptyEditor();
 
   protected readonly isAdmin = computed(() => this.adminToken().length > 0);
 
+  protected readonly filteredPosts = computed(() => {
+    const activeFilter = this.activeFilter();
+
+    if (activeFilter === 'all') {
+      return this.posts();
+    }
+
+    return this.posts().filter((post) => post.tags.includes(activeFilter));
+  });
+
+  protected readonly latestPost = computed(() => this.posts()[0] ?? null);
+
   protected readonly selectedPost = computed(() => {
-    const posts = this.posts();
+    const posts = this.filteredPosts();
     const selectedPostId = this.selectedPostId();
 
     if (selectedPostId === null) {
@@ -104,6 +126,35 @@ export class Recap implements OnInit {
     this.loadPosts();
   }
 
+  @HostListener('document:keydown', ['$event'])
+  protected navigatePostsWithKeyboard(event: KeyboardEvent): void {
+    if (this.showEditor() || window.matchMedia('(max-width: 860px)').matches) {
+      return;
+    }
+
+    if (event.key !== 'ArrowUp' && event.key !== 'ArrowDown') {
+      return;
+    }
+
+    const posts = this.filteredPosts();
+
+    if (posts.length === 0) {
+      return;
+    }
+
+    const currentIndex = Math.max(
+      posts.findIndex((post) => post.id === this.selectedPostId()),
+      0
+    );
+    const nextIndex =
+      event.key === 'ArrowDown'
+        ? Math.min(currentIndex + 1, posts.length - 1)
+        : Math.max(currentIndex - 1, 0);
+
+    this.selectedPostId.set(posts[nextIndex].id);
+    event.preventDefault();
+  }
+
   protected selectPost(postId: number): void {
     if (this.selectedPostId() === postId && window.matchMedia('(max-width: 860px)').matches) {
       this.selectedPostId.set(null);
@@ -111,6 +162,29 @@ export class Recap implements OnInit {
     }
 
     this.selectedPostId.set(postId);
+  }
+
+  protected setFilter(filter: RecapFilter): void {
+    this.activeFilter.set(filter);
+
+    const posts = this.filteredPosts();
+    const selectedPostId = this.selectedPostId();
+
+    if (selectedPostId === null || !posts.some((post) => post.id === selectedPostId)) {
+      this.selectedPostId.set(posts[0]?.id ?? null);
+    }
+  }
+
+  protected filterCount(filter: RecapFilter): number {
+    if (filter === 'all') {
+      return this.posts().length;
+    }
+
+    return this.posts().filter((post) => post.tags.includes(filter)).length;
+  }
+
+  protected filterLabel(): string {
+    return this.filterOptions.find((option) => option.value === this.activeFilter())?.label ?? 'All';
   }
 
   protected formatDate(dateKey: string): string {
@@ -223,6 +297,7 @@ export class Recap implements OnInit {
 
   protected openCreateEditor(): void {
     this.editor = this.createEmptyEditor();
+    this.editorMode.set('write');
     this.showEditor.set(true);
     this.adminError.set(null);
   }
@@ -237,12 +312,29 @@ export class Recap implements OnInit {
       links: post.links.map((link) => ({ ...link })),
       published_date: post.published_date,
     };
+    this.editorMode.set('write');
+    this.showEditor.set(true);
+    this.adminError.set(null);
+  }
+
+  protected duplicatePost(post: RecapPost): void {
+    this.editor = {
+      id: null,
+      title: `${post.title} Copy`,
+      summary: post.summary,
+      body: post.body,
+      tags: [...post.tags],
+      links: post.links.map((link) => ({ ...link })),
+      published_date: this.toDateKey(new Date()),
+    };
+    this.editorMode.set('write');
     this.showEditor.set(true);
     this.adminError.set(null);
   }
 
   protected closeEditor(): void {
     this.showEditor.set(false);
+    this.editorMode.set('write');
     this.adminError.set(null);
   }
 
@@ -294,6 +386,10 @@ export class Recap implements OnInit {
     this.insertFormat('[', '](https://)', textarea);
   }
 
+  protected setEditorMode(mode: EditorMode): void {
+    this.editorMode.set(mode);
+  }
+
   protected savePost(): void {
     const payload = this.sanitizeEditor();
 
@@ -333,12 +429,18 @@ export class Recap implements OnInit {
   }
 
   protected deletePost(post: RecapPost): void {
+    const confirmed = window.confirm(`Delete "${post.title}"?`);
+
+    if (!confirmed) {
+      return;
+    }
+
     this.http.delete(`${this.recapPostsUrl}/${post.id}`, {
       headers: this.getAdminHeaders(),
     }).subscribe({
       next: () => {
         this.posts.update((posts) => posts.filter((existingPost) => existingPost.id !== post.id));
-        this.selectedPostId.set(this.posts()[0]?.id ?? null);
+        this.selectedPostId.set(this.filteredPosts()[0]?.id ?? null);
         this.showEditor.set(false);
       },
       error: () => {
@@ -352,8 +454,10 @@ export class Recap implements OnInit {
 
     this.http.get<RecapPost[]>(this.recapPostsUrl).subscribe({
       next: (posts) => {
-        this.posts.set(this.sortPosts(posts));
-        this.selectedPostId.set(posts[0]?.id ?? null);
+        const sortedPosts = this.sortPosts(posts);
+
+        this.posts.set(sortedPosts);
+        this.selectedPostId.set(sortedPosts[0]?.id ?? null);
         this.recapError.set(null);
         this.isLoading.set(false);
       },

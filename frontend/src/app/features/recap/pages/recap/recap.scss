@@ -89,6 +89,7 @@
 
 .recap-admin-actions,
 .recap-reader-head,
+.recap-reader-actions,
 .recap-modal-header,
 .recap-link-editor-head,
 .recap-editor-actions {
@@ -228,6 +229,64 @@
   border-right: 1px solid #dbe3c7;
   max-height: calc(100vh - 15rem);
   overflow: auto;
+  position: sticky;
+  top: 6.5rem;
+}
+
+.recap-list-header {
+  background: white;
+  border-bottom: 1px solid #dbe3c7;
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.85rem;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.recap-list-header p {
+  color: #26310d;
+  font-size: 0.82rem;
+  font-weight: 950;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.recap-list-header span {
+  color: #64748b;
+  font-size: 0.82rem;
+  font-weight: 750;
+}
+
+.recap-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.recap-filter-button {
+  align-items: center;
+  background: #f8fafc;
+  border: 1px solid #dbe3c7;
+  border-radius: 999px;
+  color: #334155;
+  display: inline-flex;
+  font-size: 0.72rem;
+  font-weight: 900;
+  gap: 0.35rem;
+  padding: 0.35rem 0.55rem;
+  text-transform: uppercase;
+}
+
+.recap-filter-button span {
+  color: inherit;
+  font-size: 0.68rem;
+}
+
+.recap-filter-button-active {
+  background: #26310d;
+  border-color: #26310d;
+  color: white;
 }
 
 .recap-list-item-wrap {
@@ -235,12 +294,30 @@
 }
 
 .recap-list-item {
+  align-items: start;
   color: #0f172a;
   display: grid;
   gap: 0.35rem;
+  grid-template-columns: minmax(0, 1fr) auto;
   padding: 1rem;
   text-align: left;
   width: 100%;
+}
+
+.recap-list-item > :not(.recap-accordion-icon) {
+  grid-column: 1;
+}
+
+.recap-accordion-icon {
+  color: #64748b;
+  display: none;
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  transition: transform 160ms ease;
+}
+
+.recap-list-item-wrap-active .recap-accordion-icon {
+  transform: rotate(180deg);
 }
 
 .recap-mobile-post {
@@ -311,6 +388,7 @@
 
 .recap-reader {
   background: rgb(255 255 255 / 96%);
+  min-width: 0;
   padding: clamp(1rem, 3vw, 2rem);
 }
 
@@ -329,6 +407,13 @@
   margin-top: 1rem;
 }
 
+.recap-admin-meta {
+  color: #64748b;
+  font-size: 0.78rem;
+  font-weight: 800;
+  margin-top: 0.55rem;
+}
+
 .recap-summary {
   border-left: 4px solid #7b9b22;
   color: #334155;
@@ -343,6 +428,7 @@
   color: #1f2937;
   line-height: 1.75;
   margin-top: 1.25rem;
+  max-width: 48rem;
 }
 
 .recap-body :where(p, ul) {
@@ -392,8 +478,34 @@
 .recap-empty,
 .recap-reader-empty {
   color: #64748b;
+  display: grid;
+  gap: 0.75rem;
   font-weight: 750;
   padding: 1rem;
+}
+
+.recap-skeleton-list {
+  display: grid;
+  gap: 0;
+}
+
+.recap-skeleton-list span {
+  background:
+    linear-gradient(90deg, #eef2f7 0%, #f8fafc 42%, #eef2f7 78%);
+  background-size: 200% 100%;
+  border-bottom: 1px solid #e2e8f0;
+  height: 6.5rem;
+  animation: recap-shimmer 1.2s ease-in-out infinite;
+}
+
+@keyframes recap-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 .recap-reader-empty {
@@ -471,6 +583,30 @@
   padding: 0.35rem;
 }
 
+.recap-editor-tabs {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.35rem;
+  display: inline-flex;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  width: fit-content;
+}
+
+.recap-editor-tabs button {
+  border-radius: 0.25rem;
+  color: #334155;
+  font-size: 0.78rem;
+  font-weight: 900;
+  padding: 0.42rem 0.65rem;
+  text-transform: uppercase;
+}
+
+.recap-editor-tab-active {
+  background: #26310d;
+  color: white !important;
+}
+
 .recap-format-bar button {
   background: white;
   border: 1px solid #e2e8f0;
@@ -481,6 +617,14 @@
 
 .recap-format-bar + textarea {
   border-radius: 0 0 0.35rem 0.35rem;
+}
+
+.recap-editor-preview {
+  border: 1px solid #cbd5e1;
+  border-radius: 0.35rem;
+  margin-top: 0;
+  min-height: 16rem;
+  padding: 0.85rem;
 }
 
 .recap-link-editor {
@@ -526,8 +670,27 @@
     justify-items: stretch;
   }
 
+  .recap-page {
+    padding: 1rem 0.75rem 2rem;
+  }
+
+  .recap-hero {
+    margin-bottom: 0.8rem;
+    min-height: 12rem;
+    padding: 1.25rem;
+  }
+
+  .recap-hero h1 {
+    font-size: clamp(2rem, 12vw, 3rem);
+  }
+
+  .recap-hero-copy > p:last-child {
+    font-size: 0.95rem;
+  }
+
   .recap-layout {
     grid-template-columns: 1fr;
+    min-height: 0;
   }
 
   .recap-reader {
@@ -537,17 +700,35 @@
   .recap-list {
     border-right: 0;
     max-height: none;
+    overflow: visible;
+    position: static;
+  }
+
+  .recap-list-header {
+    position: static;
   }
 
   .recap-list-item {
-    padding: 0.85rem;
+    padding: 0.85rem 0.85rem 0.85rem 1rem;
+  }
+
+  .recap-accordion-icon {
+    display: block;
+  }
+
+  .recap-list-item-active {
+    box-shadow: none;
+  }
+
+  .recap-list-item-wrap-active {
+    box-shadow: inset 4px 0 0 #7b9b22;
   }
 
   .recap-mobile-post {
     background: white;
     border-top: 1px solid #e2e8f0;
     display: block;
-    padding: 0.95rem;
+    padding: 0.95rem 0.95rem 0.95rem 1.1rem;
   }
 
   .recap-mobile-post .recap-button {
