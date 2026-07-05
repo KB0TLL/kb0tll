@@ -230,14 +230,21 @@
   overflow: auto;
 }
 
-.recap-list-item {
+.recap-list-item-wrap {
   border-bottom: 1px solid #e2e8f0;
+}
+
+.recap-list-item {
   color: #0f172a;
   display: grid;
   gap: 0.35rem;
   padding: 1rem;
   text-align: left;
   width: 100%;
+}
+
+.recap-mobile-post {
+  display: none;
 }
 
 .recap-list-item:hover,
@@ -524,17 +531,27 @@
   }
 
   .recap-reader {
-    order: 1;
+    display: none;
   }
 
   .recap-list {
     border-right: 0;
     max-height: none;
-    order: 2;
   }
 
   .recap-list-item {
     padding: 0.85rem;
+  }
+
+  .recap-mobile-post {
+    background: white;
+    border-top: 1px solid #e2e8f0;
+    display: block;
+    padding: 0.95rem;
+  }
+
+  .recap-mobile-post .recap-button {
+    margin-bottom: 0.75rem;
   }
 
   .recap-editor-grid,

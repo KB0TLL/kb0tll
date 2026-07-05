@@ -35,32 +35,56 @@
           <p class="recap-empty">No recap posts have been added yet.</p>
         } @else {
           @for (post of posts(); track post.id) {
-            <button
-              type="button"
-              class="recap-list-item"
-              [class.recap-list-item-active]="selectedPost()?.id === post.id"
-              (click)="selectPost(post.id)"
-            >
-              <span class="recap-list-date">{{ formatDate(post.published_date) }}</span>
-              <strong>{{ post.title }}</strong>
+            <article class="recap-list-item-wrap">
+              <button
+                type="button"
+                class="recap-list-item"
+                [class.recap-list-item-active]="selectedPost()?.id === post.id"
+                (click)="selectPost(post.id)"
+              >
+                <span class="recap-list-date">{{ formatDate(post.published_date) }}</span>
+                <strong>{{ post.title }}</strong>
 
-              @if (post.summary) {
-                <span class="recap-list-summary">{{ post.summary }}</span>
-              }
+                @if (post.summary) {
+                  <span class="recap-list-summary">{{ post.summary }}</span>
+                }
 
-              @if (post.tags.length > 0) {
-                <span class="recap-tag-row">
-                  @for (tag of post.tags; track tag) {
-                    <span [class]="tagClasses(tag)">{{ tagLabel(tag) }}</span>
+                @if (post.tags.length > 0) {
+                  <span class="recap-tag-row">
+                    @for (tag of post.tags; track tag) {
+                      <span [class]="tagClasses(tag)">{{ tagLabel(tag) }}</span>
+                    }
+                  </span>
+                }
+              </button>
+
+              @if (selectedPost()?.id === post.id) {
+                <div class="recap-mobile-post">
+                  @if (isAdmin()) {
+                    <button type="button" class="recap-button recap-button-muted" (click)="openEditEditor(post)">
+                      <ng-icon name="lucideEdit3" size="16" strokeWidth="2.5" />
+                      Edit
+                    </button>
                   }
-                </span>
+
+                  <div class="recap-body" [innerHTML]="renderBody(post.body)"></div>
+
+                  @if (post.links.length > 0) {
+                    <div class="recap-links">
+                      <h3>Links</h3>
+                      @for (link of post.links; track link.url) {
+                        <a [href]="link.url" target="_blank" rel="noreferrer">{{ link.label }}</a>
+                      }
+                    </div>
+                  }
+                </div>
               }
-            </button>
+            </article>
           }
         }
       </aside>
 
-      <article class="recap-reader" #readerPanel>
+      <article class="recap-reader">
         @if (selectedPost(); as post) {
           <div class="recap-reader-head">
             <div>
