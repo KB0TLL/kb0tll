@@ -399,6 +399,15 @@
   display: none;
 }
 
+.calendar-mobile-editable-event {
+  cursor: pointer;
+  outline-offset: 2px;
+}
+
+.calendar-mobile-editable-event:focus-visible {
+  outline: 2px solid #7b9b22;
+}
+
 @media (max-width: 860px) {
   .calendar-hero-panel,
   .calendar-hero-admin-actions,

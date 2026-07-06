@@ -96,6 +96,8 @@ export class Calendar implements OnInit {
 
   protected readonly showAddForm = signal<boolean>(false);
 
+  protected readonly editingEventId = signal<number | null>(null);
+
   protected readonly showAdminLogin = signal<boolean>(false);
 
   protected readonly isLoadingEvents = signal<boolean>(false);
@@ -111,6 +113,8 @@ export class Calendar implements OnInit {
   protected readonly adminToken = signal<string>('');
 
   protected readonly isAdmin = computed(() => this.adminToken().length > 0);
+
+  protected readonly isEditingEvent = computed(() => this.editingEventId() !== null);
 
   protected adminTokenInput = '';
 
@@ -197,20 +201,44 @@ export class Calendar implements OnInit {
     this.displayDate.set({ year, month: month + 1 });
   }
 
-  protected addEvent(): void {
-    const title = this.newEvent.title.trim();
+  protected saveEvent(): void {
+    const event = this.buildEventInput();
 
-    if (!this.newEvent.date || !title) {
+    if (!event) {
       return;
     }
 
-    const event: CalendarEventInput = {
-      date: this.newEvent.date,
-      title,
-      time: this.newEvent.time,
-      type: this.newEvent.type,
-      notes: this.newEvent.notes,
-    };
+    const editingEventId = this.editingEventId();
+
+    if (editingEventId !== null) {
+      this.updateEvent(editingEventId, event);
+      return;
+    }
+
+    this.createEvent(event);
+  }
+
+  protected removeEvent(eventId: number): void {
+    this.http.delete(`${this.calendarEventsUrl}/${eventId}`, {
+      headers: this.getAdminHeaders(),
+    }).subscribe({
+      next: () => {
+        this.events.update((events) => events.filter((event) => event.id !== eventId));
+
+        if (this.selectedEvent()?.id === eventId) {
+          this.closeEventDetail();
+        }
+
+        this.calendarError.set(null);
+      },
+      error: () => {
+        this.calendarError.set('Could not remove the event. Please try again.');
+        this.adminError.set('Check your admin token and try again.');
+      },
+    });
+  }
+
+  private createEvent(event: CalendarEventInput): void {
     const eventsToCreate = this.newEvent.recurringWeekly
       ? this.buildWeeklyRecurringEvents(event)
       : [event];
@@ -232,14 +260,7 @@ export class Calendar implements OnInit {
           month: eventDate.getMonth(),
         });
 
-        this.newEvent = {
-          date: savedEvents[0].date,
-          title: '',
-          time: '09:00',
-          type: 'meeting',
-          notes: '',
-          recurringWeekly: false,
-        };
+        this.resetEventForm(savedEvents[0].date);
         this.calendarError.set(null);
         this.adminError.set(null);
         this.showAddForm.set(false);
@@ -251,21 +272,28 @@ export class Calendar implements OnInit {
     });
   }
 
-  protected removeEvent(eventId: number): void {
-    this.http.delete(`${this.calendarEventsUrl}/${eventId}`, {
+  private updateEvent(eventId: number, event: CalendarEventInput): void {
+    this.http.put<CalendarEvent>(`${this.calendarEventsUrl}/${eventId}`, event, {
       headers: this.getAdminHeaders(),
     }).subscribe({
-      next: () => {
-        this.events.update((events) => events.filter((event) => event.id !== eventId));
+      next: (savedEvent) => {
+        this.events.update((events) =>
+          events.map((existingEvent) => existingEvent.id === savedEvent.id ? savedEvent : existingEvent)
+        );
 
-        if (this.selectedEvent()?.id === eventId) {
-          this.closeEventDetail();
-        }
+        const eventDate = new Date(`${savedEvent.date}T00:00:00`);
+
+        this.displayDate.set({
+          year: eventDate.getFullYear(),
+          month: eventDate.getMonth(),
+        });
 
         this.calendarError.set(null);
+        this.adminError.set(null);
+        this.closeAddForm();
       },
       error: () => {
-        this.calendarError.set('Could not remove the event. Please try again.');
+        this.calendarError.set('Could not update the event. Please try again.');
         this.adminError.set('Check your admin token and try again.');
       },
     });
@@ -442,15 +470,34 @@ export class Calendar implements OnInit {
 
   protected toggleAddForm(): void {
     this.showAddForm.set(!this.showAddForm());
+    this.editingEventId.set(null);
   }
 
   protected openAddForm(): void {
+    this.editingEventId.set(null);
+    this.resetEventForm(this.toDateKey(new Date(this.displayDate().year, this.displayDate().month, 1)));
+    this.showAddForm.set(true);
+    this.adminError.set(null);
+  }
+
+  protected openEditForm(event: CalendarEvent): void {
+    this.editingEventId.set(event.id);
+    this.newEvent = {
+      date: event.date,
+      title: event.title,
+      time: event.time,
+      type: event.type,
+      notes: event.notes ?? '',
+      recurringWeekly: false,
+    };
+    this.closeEventDetail();
     this.showAddForm.set(true);
     this.adminError.set(null);
   }
 
   protected closeAddForm(): void {
     this.showAddForm.set(false);
+    this.editingEventId.set(null);
     this.adminError.set(null);
   }
 
@@ -480,6 +527,7 @@ export class Calendar implements OnInit {
     localStorage.removeItem(this.adminTokenStorageKey);
     this.adminError.set(null);
     this.showAddForm.set(false);
+    this.editingEventId.set(null);
   }
 
   protected exportPdf(): void {
@@ -532,6 +580,33 @@ export class Calendar implements OnInit {
     }
 
     return events;
+  }
+
+  private buildEventInput(): CalendarEventInput | null {
+    const title = this.newEvent.title.trim();
+
+    if (!this.newEvent.date || !title) {
+      return null;
+    }
+
+    return {
+      date: this.newEvent.date,
+      title,
+      time: this.newEvent.time,
+      type: this.newEvent.type,
+      notes: this.newEvent.notes,
+    };
+  }
+
+  private resetEventForm(date: string): void {
+    this.newEvent = {
+      date,
+      title: '',
+      time: '09:00',
+      type: 'meeting',
+      notes: '',
+      recurringWeekly: false,
+    };
   }
 
   private loadAdminToken(): void {

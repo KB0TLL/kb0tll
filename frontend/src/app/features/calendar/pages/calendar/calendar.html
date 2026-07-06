@@ -179,14 +179,24 @@
                     </div>
 
                     @if (isAdmin()) {
-                      <button
-                        type="button"
-                        (click)="removeEvent(event.id)"
-                        class="rounded-full px-2 text-lg font-bold opacity-70 hover:opacity-100"
-                        aria-label="Remove event"
-                      >
-                        ×
-                      </button>
+                      <div class="flex shrink-0 items-center gap-1">
+                        <button
+                          type="button"
+                          (click)="openEditForm(event)"
+                          class="rounded-full bg-white/70 px-2 py-1 text-xs font-bold opacity-80 transition hover:opacity-100"
+                        >
+                          Edit
+                        </button>
+
+                        <button
+                          type="button"
+                          (click)="removeEvent(event.id)"
+                          class="rounded-full px-2 text-lg font-bold opacity-70 hover:opacity-100"
+                          aria-label="Remove event"
+                        >
+                          ×
+                        </button>
+                      </div>
                     }
                   </div>
                 </div>
@@ -354,7 +364,15 @@
                 <div class="calendar-pdf-day">{{ day.day }}</div>
 
                 @for (event of day.events; track event.id) {
-                  <div [class]="printableEventClasses(event.type)">
+                  <div
+                    [class]="printableEventClasses(event.type)"
+                    [class.calendar-mobile-editable-event]="isAdmin()"
+                    [attr.role]="isAdmin() ? 'button' : null"
+                    [attr.tabindex]="isAdmin() ? 0 : null"
+                    (click)="isAdmin() && openEditForm(event)"
+                    (keydown.enter)="isAdmin() && openEditForm(event)"
+                    (keydown.space)="isAdmin() && openEditForm(event); $event.preventDefault()"
+                  >
                     {{ formatPrintableEvent(event) }}
                   </div>
                 }
@@ -419,19 +437,19 @@
 
 @if (isAdmin() && showAddForm()) {
   <div class="calendar-modal-backdrop" (click)="closeAddForm()">
-    <section class="calendar-modal" aria-label="Add calendar event" (click)="$event.stopPropagation()">
+    <section class="calendar-modal" aria-label="Calendar event editor" (click)="$event.stopPropagation()">
       <header class="calendar-modal-header">
         <div>
-          <p class="calendar-section-title">New Event</p>
-          <h2>Add Calendar Item</h2>
+          <p class="calendar-section-title">{{ isEditingEvent() ? 'Edit Event' : 'New Event' }}</p>
+          <h2>{{ isEditingEvent() ? 'Update Calendar Item' : 'Add Calendar Item' }}</h2>
         </div>
 
-        <button type="button" class="calendar-close-button" aria-label="Close add event form" (click)="closeAddForm()">
+        <button type="button" class="calendar-close-button" aria-label="Close event form" (click)="closeAddForm()">
           <ng-icon name="lucideX" size="20" strokeWidth="2.6" />
         </button>
       </header>
 
-      <form (ngSubmit)="addEvent()" class="calendar-event-form">
+      <form (ngSubmit)="saveEvent()" class="calendar-event-form">
         <div class="calendar-event-form-grid">
           <label>
             <span>Date</span>
@@ -463,14 +481,16 @@
           <textarea name="eventNotes" [(ngModel)]="newEvent.notes" rows="4" placeholder="Add notes"></textarea>
         </label>
 
-        <label class="calendar-checkbox-row">
-          <input
-            type="checkbox"
-            name="eventRecurringWeekly"
-            [(ngModel)]="newEvent.recurringWeekly"
-          />
-          <span>Repeat weekly through the selected month</span>
-        </label>
+        @if (!isEditingEvent()) {
+          <label class="calendar-checkbox-row">
+            <input
+              type="checkbox"
+              name="eventRecurringWeekly"
+              [(ngModel)]="newEvent.recurringWeekly"
+            />
+            <span>Repeat weekly through the selected month</span>
+          </label>
+        }
 
         @if (adminError()) {
           <p class="calendar-alert calendar-alert-warn">
@@ -483,7 +503,7 @@
             Cancel
           </button>
           <button type="submit" class="calendar-button calendar-button-primary">
-            Save Event
+            {{ isEditingEvent() ? 'Update Event' : 'Save Event' }}
           </button>
         </footer>
       </form>
@@ -538,13 +558,23 @@
       }
 
       @if (isAdmin()) {
-        <button
-          type="button"
-          (click)="removeEvent(selectedEvent()!.id); closeEventDetail()"
-          class="w-full rounded bg-red-50 px-2 py-1.5 text-xs font-semibold text-red-700 transition hover:bg-red-100 mt-1"
-        >
-          Remove
-        </button>
+        <div class="grid grid-cols-2 gap-2 pt-1">
+          <button
+            type="button"
+            (click)="openEditForm(selectedEvent()!)"
+            class="rounded bg-slate-100 px-2 py-1.5 text-xs font-semibold text-slate-800 transition hover:bg-slate-200"
+          >
+            Edit
+          </button>
+
+          <button
+            type="button"
+            (click)="removeEvent(selectedEvent()!.id); closeEventDetail()"
+            class="rounded bg-red-50 px-2 py-1.5 text-xs font-semibold text-red-700 transition hover:bg-red-100"
+          >
+            Remove
+          </button>
+        </div>
       }
     </div>
   </div>

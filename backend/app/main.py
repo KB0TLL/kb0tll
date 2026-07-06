@@ -177,6 +177,60 @@ def create_calendar_event(
     return serialize_event(row)
 
 
+@app.put("/api/calendar-events/{event_id}", response_model=CalendarEvent)
+def update_calendar_event(
+    event_id: int,
+    event: CalendarEventInput,
+    _: None = Depends(require_admin),
+) -> dict[str, Any]:
+    with get_connection() as connection:
+        if is_postgres_connection(connection):
+            row = execute_fetch_one(
+                connection,
+                """
+                update calendar_events
+                set event_date = %s,
+                    event_time = %s,
+                    type = %s,
+                    title = %s,
+                    notes = %s
+                where id = %s
+                returning id, event_date as date, event_time as time, type, title, notes
+                """,
+                (*event_params(event), event_id),
+            )
+        else:
+            cursor = connection.execute(
+                """
+                update calendar_events
+                set event_date = ?,
+                    event_time = ?,
+                    type = ?,
+                    title = ?,
+                    notes = ?
+                where id = ?
+                """,
+                (*event_params(event), event_id),
+            )
+
+            if cursor.rowcount == 0:
+                raise HTTPException(status_code=404, detail="Event not found")
+
+            row = execute_fetch_one(
+                connection,
+                """
+                select id, event_date as date, event_time as time, type, title, notes
+                from calendar_events
+                where id = ?
+                """,
+                (event_id,),
+            )
+
+        connection.commit()
+
+    return serialize_event(row)
+
+
 @app.delete("/api/calendar-events/{event_id}", status_code=204)
 def delete_calendar_event(
     event_id: int,
